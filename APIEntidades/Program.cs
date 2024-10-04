@@ -7,6 +7,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using APIEntidades.Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +40,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Conexión BBDD
-//builder.Services.AddDbContext<GestoresDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("database")));
+builder.Services.AddDbContext<EntidadesDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("database")));
 
 // Inyección Dependencia
 builder.Services.AddTransient<IUsuarioAppService, UsuarioAppService>();
@@ -48,6 +50,7 @@ builder.Services.AddTransient<IUtilities, Utilities>();
 
 // Inyección de validador
 builder.Services.AddTransient<IValidator<UsuarioDto>, UsuarioValidator>();
+builder.Services.AddTransient<IValidator<IngresoDto>, IngresoValidator>();
 
 var app = builder.Build();
 

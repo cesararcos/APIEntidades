@@ -12,8 +12,11 @@ namespace APIEntidades.Utilities.Validators
                 .EmailAddress().WithMessage("El correo electrónico no es válido.");
 
             RuleFor(usuario => usuario.Clave)
-                .NotEmpty().WithMessage("El nombre es requerido.");
-                
+                .NotEmpty().WithMessage("La clave es requerida.");
+
+            RuleFor(usuario => usuario.Usuario)
+                .NotEmpty().WithMessage("El usuario es requerido.");
+
 
             //RuleFor(usuario => usuario.Edad)
             //    .GreaterThan(18).WithMessage("Debe ser mayor de 18 años.")

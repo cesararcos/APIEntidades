@@ -2,6 +2,7 @@
 using APIEntidades.Domain.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace APIEntidades.Controllers
 {
@@ -26,6 +27,18 @@ namespace APIEntidades.Controllers
                 return NotFound(responde.ErrorMessage);
 
             return Ok(responde);
+        }
+
+        [HttpPost]
+        [Route(nameof(EntidadesController.Login))]
+        public IActionResult Login(IngresoDto ingreso)
+        {
+            var responde = _usuarioAppService.Login(ingreso);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(new { Token = responde.Data });
         }
     }
 }
