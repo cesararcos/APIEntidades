@@ -99,5 +99,51 @@ namespace APIEntidades.Application
                 };
             }
         }
+
+        public ResponseDto<IEnumerable<VideoJuegosDto>> GetGamesPaginate(FiltroVideoJuegoDto filtroVideoJuegoDto)
+        {
+            try
+            {
+                if (filtroVideoJuegoDto.page <= 0)
+                    filtroVideoJuegoDto.page = 1;
+
+                int pageSize = 5;
+                var gamesFilter = _context?.Videojuegos?.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre && x.Compania == filtroVideoJuegoDto.Compania && x.Ano == filtroVideoJuegoDto.Ano).Skip((filtroVideoJuegoDto.page - 1) * pageSize).Take(pageSize).ToList() ?? null;
+
+                if (gamesFilter == null)
+                {
+                    return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.NOT_EXIST
+                    };
+                }
+
+                IEnumerable<VideoJuegosDto> gamesList = gamesFilter.Select(u => new VideoJuegosDto()
+                {
+                    Nombre = u.Nombre,
+                    Compania = u.Compania,
+                    Ano = u.Ano,
+                    Precio = u.Precio,
+                    Puntaje = u.Puntaje,
+                    FechaActualizacion = u.FechaActualizacion,
+                    Usuario = u.Usuario,
+                }).ToList();
+
+                return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                {
+                    Success = true,
+                    Data = gamesList
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                {
+                    Success = false,
+                    ErrorMessage = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
     }
 }

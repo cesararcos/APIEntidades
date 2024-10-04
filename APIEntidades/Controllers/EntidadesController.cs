@@ -69,5 +69,18 @@ namespace APIEntidades.Controllers
 
             return Ok(responde);
         }
+
+        [HttpPost]
+        [Authorize]
+        [Route(nameof(EntidadesController.GetGamesPaginate))]
+        public IActionResult GetGamesPaginate(FiltroVideoJuegoDto filtroVideoJuegoDto)
+        {
+            var responde = _videoJuegosAppService.GetGamesPaginate(filtroVideoJuegoDto);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
+        }
     }
 }
