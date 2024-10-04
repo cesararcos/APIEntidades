@@ -82,5 +82,31 @@ namespace APIEntidades.Controllers
 
             return Ok(responde);
         }
+
+        [HttpPost]
+        //[Authorize]
+        [Route(nameof(SaveVideoGame))]
+        public IActionResult SaveVideoGame(VideoJuegosDto videoJuegosDto)
+        {
+            var responde = _videoJuegosAppService.SaveVideoGame(videoJuegosDto);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
+        }
+
+        [HttpPut]
+        //[Authorize]
+        [Route("{id:int}/" + nameof(SaveVideoGame))]
+        public IActionResult SaveVideoGame(int id, VideoJuegosDto videoJuegosDto)
+        {
+            var responde = _videoJuegosAppService.SaveVideoGame(videoJuegosDto);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
+        }
     }
 }

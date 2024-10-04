@@ -1,5 +1,6 @@
 ﻿using APIEntidades.Application.Contracts;
 using APIEntidades.Domain.Dto;
+using APIEntidades.Domain.Entities;
 using APIEntidades.Infrastructure.DataAccess;
 using APIEntidades.Infrastructure.Helpers;
 using APIEntidades.Utilities.Validators;
@@ -104,11 +105,11 @@ namespace APIEntidades.Application
         {
             try
             {
-                if (filtroVideoJuegoDto.page <= 0)
-                    filtroVideoJuegoDto.page = 1;
+                if (filtroVideoJuegoDto.Page <= 0)
+                    filtroVideoJuegoDto.Page = 1;
 
                 int pageSize = 5;
-                var gamesFilter = _context?.Videojuegos?.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre && x.Compania == filtroVideoJuegoDto.Compania && x.Ano == filtroVideoJuegoDto.Ano).Skip((filtroVideoJuegoDto.page - 1) * pageSize).Take(pageSize).ToList() ?? null;
+                var gamesFilter = _context?.Videojuegos?.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre || x.Compania == filtroVideoJuegoDto.Compania || x.Ano == filtroVideoJuegoDto.Ano).Skip((filtroVideoJuegoDto.Page - 1) * pageSize).Take(pageSize).ToList() ?? null;
 
                 if (gamesFilter == null)
                 {
@@ -139,6 +140,62 @@ namespace APIEntidades.Application
             catch (Exception ex)
             {
                 return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                {
+                    Success = false,
+                    ErrorMessage = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+        public ResponseDto<bool> SaveVideoGame(VideoJuegosDto videoJuegosDto)
+        {
+            try
+            {
+                //var result = _usuarioValidator.Validate(usuario);
+
+                //if (!result.IsValid)
+                //{
+                //    return new ResponseDto<bool>
+                //    {
+                //        Success = false,
+                //        ErrorMessage = result.Errors.First().ErrorMessage
+                //    };
+                //}
+
+                var findGame = _context?.Videojuegos?.FirstOrDefault(x => x.Nombre == videoJuegosDto.Nombre) ?? null;
+
+                if (findGame != null)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.GAME_EXIST
+                    };
+                }
+
+                Videojuegos videojuegos = new()
+                {
+                    Id = Guid.NewGuid(),
+                    Nombre = videoJuegosDto.Nombre,
+                    Compania = videoJuegosDto.Compania,
+                    Ano = videoJuegosDto.Ano,
+                    Precio = videoJuegosDto.Precio,
+                    Puntaje = videoJuegosDto.Puntaje
+                };
+
+                _context!.Videojuegos.Add(videojuegos);
+                _context!.SaveChanges();
+
+
+                return new ResponseDto<bool>
+                {
+                    Success = true,
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<bool>
                 {
                     Success = false,
                     ErrorMessage = $"An error occurred: {ex.Message}"

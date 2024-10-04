@@ -7,5 +7,6 @@ namespace APIEntidades.Application.Contracts
         ResponseDto<IEnumerable<VideoJuegosDto>> Get();
         ResponseDto<VideoJuegosDto> GetById(Guid id);
         ResponseDto<IEnumerable<VideoJuegosDto>> GetGamesPaginate(FiltroVideoJuegoDto filtroVideoJuegoDto);
+        ResponseDto<bool> SaveVideoGame(VideoJuegosDto videoJuegosDto);
     }
 }
