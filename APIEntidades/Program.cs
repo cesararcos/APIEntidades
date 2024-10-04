@@ -44,6 +44,7 @@ builder.Services.AddDbContext<EntidadesDbContext>(options => options.UseSqlServe
 
 // Inyección Dependencia
 builder.Services.AddTransient<IUsuarioAppService, UsuarioAppService>();
+builder.Services.AddTransient<IVideoJuegosAppService, VideoJuegosAppService>();
 
 // Inyección de JWT
 builder.Services.AddTransient<IUtilities, Utilities>();

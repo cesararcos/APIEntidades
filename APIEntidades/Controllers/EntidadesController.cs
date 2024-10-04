@@ -1,5 +1,6 @@
 ﻿using APIEntidades.Application.Contracts;
 using APIEntidades.Domain.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -11,10 +12,12 @@ namespace APIEntidades.Controllers
     public class EntidadesController : ControllerBase
     {
         private readonly IUsuarioAppService _usuarioAppService;
+        private readonly IVideoJuegosAppService _videoJuegosAppService;
 
-        public EntidadesController(IUsuarioAppService usuarioAppService)
+        public EntidadesController(IUsuarioAppService usuarioAppService, IVideoJuegosAppService videoJuegosAppService)
         {
-            _usuarioAppService = usuarioAppService;  
+            _usuarioAppService = usuarioAppService;
+            _videoJuegosAppService = videoJuegosAppService;
         }
 
         [HttpPost]
@@ -39,6 +42,32 @@ namespace APIEntidades.Controllers
                 return NotFound(responde.ErrorMessage);
 
             return Ok(new { Token = responde.Data });
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route(nameof(EntidadesController.GetGames))]
+        public IActionResult GetGames()
+        {
+            var responde = _videoJuegosAppService.Get();
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route(nameof(EntidadesController.GetGamesById))]
+        public IActionResult GetGamesById([FromBody] Guid id)
+        {
+            var responde = _videoJuegosAppService.GetById(id);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
         }
     }
 }
