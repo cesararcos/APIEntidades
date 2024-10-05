@@ -3,37 +3,45 @@ using APIEntidades.Domain.Dto;
 using APIEntidades.Domain.Entities;
 using APIEntidades.Infrastructure.DataAccess;
 using APIEntidades.Infrastructure.Helpers;
-using APIEntidades.Utilities.Validators;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace APIEntidades.Application
 {
-    public class VideoJuegosAppService : IVideoJuegosAppService
+    public class VideoJuegosAppService(EntidadesDbContext context, IMemoryCache memoryCache) : IVideoJuegosAppService
     {
-        private readonly EntidadesDbContext _context;
-        public VideoJuegosAppService(EntidadesDbContext context)
-        {
-            _context = context;
-        }
+        private readonly EntidadesDbContext _context = context;
+        private readonly IMemoryCache _memoryCache = memoryCache;
+        private readonly string cacheKey = "VideoGameList"; // Clave para el cache
 
         public ResponseDto<IEnumerable<VideoJuegosDto>> Get()
         {
             try
             {
-                var games = _context?.Videojuegos?.ToList() ?? null;
-
-                if (games == null)
+                if (!_memoryCache.TryGetValue(cacheKey, out List<Videojuegos>? videoGames))
                 {
-                    return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                    videoGames = _context.Videojuegos.ToList();
+
+                    if (videoGames.Count == 0)
                     {
-                        Success = false,
-                        ErrorMessage = Constants.NOT_EXIST
-                    };
+                        return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                        {
+                            Success = false,
+                            ErrorMessage = Constants.NOT_EXIST
+                        };
+                    }
+
+                    // Configurar opciones de caché (duración, prioridad, etc.)
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10)) // Caché expira si no se accede en 10 minutos
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1))  // Caché expira absolutamente en 1 hora
+                        .SetPriority(CacheItemPriority.Normal);         // Prioridad de eliminación
+
+                    // Guardar los datos en caché
+                    _memoryCache.Set(cacheKey, videoGames, cacheEntryOptions);
                 }
 
-                IEnumerable<VideoJuegosDto> gamesList = games.Select(u => new VideoJuegosDto()
+                IEnumerable<VideoJuegosDto> gamesList = videoGames!.Select(u => new VideoJuegosDto()
                 {
                     Nombre = u.Nombre,
                     Compania = u.Compania,
@@ -49,6 +57,7 @@ namespace APIEntidades.Application
                     Success = true,
                     Data = gamesList
                 };
+
             }
             catch (Exception ex)
             {

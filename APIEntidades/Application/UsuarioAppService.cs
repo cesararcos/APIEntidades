@@ -12,19 +12,12 @@ using System.Threading.Tasks;
 
 namespace APIEntidades.Application
 {
-    public class UsuarioAppService : IUsuarioAppService
+    public class UsuarioAppService(EntidadesDbContext context, IValidator<UsuarioDto> usuarioValidator, IValidator<IngresoDto> ingresoValidator, IUtilities utilities) : IUsuarioAppService
     {
-        private readonly EntidadesDbContext _context;
-        private readonly IValidator<UsuarioDto> _usuarioValidator;
-        private readonly IValidator<IngresoDto> _ingresoValidator;
-        private readonly IUtilities _utilities;
-        public UsuarioAppService(EntidadesDbContext context, IValidator<UsuarioDto> usuarioValidator, IValidator<IngresoDto> ingresoValidator, IUtilities utilities)
-        {
-            _context = context;
-            _usuarioValidator = usuarioValidator;
-            _ingresoValidator = ingresoValidator;
-            _utilities = utilities;
-        }
+        private readonly EntidadesDbContext _context = context;
+        private readonly IValidator<UsuarioDto> _usuarioValidator = usuarioValidator;
+        private readonly IValidator<IngresoDto> _ingresoValidator = ingresoValidator;
+        private readonly IUtilities _utilities = utilities;
 
         public ResponseDto<bool> Register(UsuarioDto usuario)
         {

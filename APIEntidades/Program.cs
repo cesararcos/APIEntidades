@@ -19,6 +19,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Agregar el servicio de memoria caché
+builder.Services.AddMemoryCache();
+
 // Añadir el servicio de autenticación JWT
 builder.Services.AddAuthentication(options =>
 {
