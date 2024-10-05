@@ -84,5 +84,28 @@ namespace EntidadesTest
             // Assert: verificar el resultado
             var okResult = Assert.IsType<OkObjectResult>(result);
         }
+
+        [Fact]
+        public void GetStatusGameById()
+        {
+            // Arrange: configurar el mock para devolver videojuego
+            var id = "d768ec7d-2d64-43b2-b32c-9ba861b4e8a2";
+            Guid guid = new(id);
+            var game = new VideoJuegosDto { Nombre = "Game 1", Compania = "Compania 1", Ano = 1, Precio = 1, Puntaje = 1, FechaActualizacion = null, Usuario = null };
+
+            var mockVideoGames = new ResponseDto<VideoJuegosDto>
+            {
+                Success = true,
+                Data = game
+            };
+
+            _mockVideoJuegosAppService.Setup(service => service.GetById(guid)).Returns(mockVideoGames);
+
+            // Act: llamar al método del controlador
+            var result = _controller.GetGamesById(guid);
+
+            // Assert: verificar el resultado
+            var okResult = Assert.IsType<OkObjectResult>(result);
+        }
     }
 }
