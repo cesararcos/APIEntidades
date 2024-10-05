@@ -98,10 +98,23 @@ namespace APIEntidades.Controllers
 
         [HttpPut]
         //[Authorize]
-        [Route("{id:int}/" + nameof(SaveVideoGame))]
-        public IActionResult SaveVideoGame(int id, VideoJuegosDto videoJuegosDto)
+        [Route("{id:Guid}/" + nameof(EditVideoGame))]
+        public IActionResult EditVideoGame(Guid id, VideoJuegosDto videoJuegosDto)
         {
-            var responde = _videoJuegosAppService.SaveVideoGame(videoJuegosDto);
+            var responde = _videoJuegosAppService.EditVideoGame(id, videoJuegosDto);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
+        }
+
+        [HttpDelete]
+        //[Authorize]
+        [Route("{id:Guid}/" + nameof(DeleteVideoGame))]
+        public IActionResult DeleteVideoGame(Guid id)
+        {
+            var responde = _videoJuegosAppService.DeleteVideoGame(id);
 
             if (!responde.Success)
                 return NotFound(responde.ErrorMessage);

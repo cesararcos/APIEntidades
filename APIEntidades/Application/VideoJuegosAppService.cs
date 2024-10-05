@@ -6,6 +6,7 @@ using APIEntidades.Infrastructure.Helpers;
 using APIEntidades.Utilities.Validators;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace APIEntidades.Application
 {
@@ -186,6 +187,102 @@ namespace APIEntidades.Application
                 _context!.Videojuegos.Add(videojuegos);
                 _context!.SaveChanges();
 
+
+                return new ResponseDto<bool>
+                {
+                    Success = true,
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<bool>
+                {
+                    Success = false,
+                    ErrorMessage = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+        public ResponseDto<bool> EditVideoGame(Guid id, VideoJuegosDto videoJuegosDto)
+        {
+            try
+            {
+                //var result = _usuarioValidator.Validate(usuario);
+
+                //if (!result.IsValid)
+                //{
+                //    return new ResponseDto<bool>
+                //    {
+                //        Success = false,
+                //        ErrorMessage = result.Errors.First().ErrorMessage
+                //    };
+                //}
+
+                Videojuegos? findGame = _context?.Videojuegos?.FirstOrDefault(x => x.Id == id) ?? null;
+
+                if (findGame == null)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.NOT_EXIST
+                    };
+                }
+
+                findGame.Nombre = videoJuegosDto.Nombre;
+                findGame.Compania = videoJuegosDto.Compania;
+                findGame.Ano = videoJuegosDto.Ano;
+                findGame.Precio = videoJuegosDto.Precio;
+                findGame.Puntaje = videoJuegosDto.Puntaje;
+
+                _context!.SaveChanges();
+
+                return new ResponseDto<bool>
+                {
+                    Success = true,
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<bool>
+                {
+                    Success = false,
+                    ErrorMessage = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+        public ResponseDto<bool> DeleteVideoGame(Guid id)
+        {
+            try
+            {
+                //var result = _usuarioValidator.Validate(usuario);
+
+                //if (!result.IsValid)
+                //{
+                //    return new ResponseDto<bool>
+                //    {
+                //        Success = false,
+                //        ErrorMessage = result.Errors.First().ErrorMessage
+                //    };
+                //}
+
+                Videojuegos? findGame = _context?.Videojuegos?.FirstOrDefault(x => x.Id == id) ?? null;
+
+                if (findGame == null)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.NOT_EXIST
+                    };
+                }
+
+                // Eliminar de la base de datos
+                _context!.Videojuegos.Remove(findGame);
+                _context!.SaveChanges();
 
                 return new ResponseDto<bool>
                 {
