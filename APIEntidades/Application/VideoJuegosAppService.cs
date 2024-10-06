@@ -3,14 +3,22 @@ using APIEntidades.Domain.Dto;
 using APIEntidades.Domain.Entities;
 using APIEntidades.Infrastructure.DataAccess;
 using APIEntidades.Infrastructure.Helpers;
+using APIEntidades.Utilities.Validators;
+using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Linq;
+using System.Text;
 
 namespace APIEntidades.Application
 {
-    public class VideoJuegosAppService(EntidadesDbContext context, IMemoryCache memoryCache) : IVideoJuegosAppService
+    public class VideoJuegosAppService(EntidadesDbContext context, IValidator<int> archiveValidator, IMemoryCache memoryCache) : IVideoJuegosAppService
     {
         private readonly EntidadesDbContext _context = context;
+        private readonly IValidator<int> _archiveValidator = archiveValidator;
         private readonly IMemoryCache _memoryCache = memoryCache;
         private readonly string cacheKey = "VideoGameList"; // Clave para el cache
 
@@ -302,6 +310,78 @@ namespace APIEntidades.Application
             catch (Exception ex)
             {
                 return new ResponseDto<bool>
+                {
+                    Success = false,
+                    ErrorMessage = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+        public ResponseDto<MemoryStream> GetArchiveCsv(int? top)
+        {
+            try
+            {
+                FluentValidation.Results.ValidationResult result = new();
+
+                if (top.HasValue)
+                    result = _archiveValidator.Validate(top!.Value);
+                
+                if (!result.IsValid)
+                {
+                    return new ResponseDto<MemoryStream>
+                    {
+                        Success = false,
+                        ErrorMessage = result.Errors.First().ErrorMessage
+                    };
+                }
+
+                IEnumerable<Videojuegos> videoGames = _context.Videojuegos.Include(x => x.Calificaciones).ToList();
+
+                if (!videoGames.Any())
+                {
+                    return new ResponseDto<MemoryStream>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.NOT_EXIST
+                    };
+                }
+
+                int filter = top ?? videoGames.Count();
+                List<GameRankingDto> rankingList = videoGames.Select(v => new GameRankingDto()
+                {
+                    Title = v.Nombre,
+                    Company = v.Compania,
+                    Score = v.Calificaciones.Any() ? v.Calificaciones.Average(r => r.Puntaje ?? 0.0m) : 0
+                }).OrderByDescending(v => v.Score).Take(filter).ToList();
+
+                // Clasificación
+                int media = (filter) / 2;
+
+                for (int i = 0; i < rankingList.Count; i++)
+                {
+                    rankingList[i].Classification = i + 1 <= media ? "GOTY" : "AAA";
+                }
+
+                var csvData = new StringBuilder();
+                csvData.AppendLine("Titulo|Compania|Puntaje|Clasificacion");
+
+                foreach (var item in rankingList)
+                {
+                    csvData.AppendLine($"{item.Title}|{item.Company}|{item.Score}|{item.Classification}");
+                }
+
+                var byteArray = Encoding.UTF8.GetBytes(csvData.ToString());
+                var stream = new MemoryStream(byteArray);
+
+                return new ResponseDto<MemoryStream>
+                {
+                    Success = true,
+                    Data = stream
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<MemoryStream>
                 {
                     Success = false,
                     ErrorMessage = $"An error occurred: {ex.Message}"

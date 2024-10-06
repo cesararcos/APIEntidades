@@ -3,6 +3,7 @@ using APIEntidades.Domain.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace APIEntidades.Controllers
@@ -120,6 +121,19 @@ namespace APIEntidades.Controllers
                 return NotFound(responde.ErrorMessage);
 
             return Ok(responde);
+        }
+
+        [HttpGet]
+        //[Authorize]
+        [Route(nameof(GetArchiveCsv))]
+        public IActionResult GetArchiveCsv([FromQuery] int? top)
+        {
+            var responde = _videoJuegosAppService.GetArchiveCsv(top);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return File(responde.Data, "text/csv", "ranking_videojuegos.csv");
         }
     }
 }

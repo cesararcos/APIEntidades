@@ -1,4 +1,5 @@
 ﻿using APIEntidades.Domain.Dto;
+using System.Text;
 
 namespace APIEntidades.Application.Contracts
 {
@@ -10,5 +11,6 @@ namespace APIEntidades.Application.Contracts
         ResponseDto<bool> SaveVideoGame(VideoJuegosDto videoJuegosDto);
         ResponseDto<bool> EditVideoGame(Guid id, VideoJuegosDto videoJuegosDto);
         ResponseDto<bool> DeleteVideoGame(Guid id);
+        ResponseDto<MemoryStream> GetArchiveCsv(int? top);
     }
 }

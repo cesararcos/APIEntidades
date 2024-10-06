@@ -55,6 +55,7 @@ builder.Services.AddTransient<IUtilities, Utilities>();
 // Inyección de validador
 builder.Services.AddTransient<IValidator<UsuarioDto>, UsuarioValidator>();
 builder.Services.AddTransient<IValidator<IngresoDto>, IngresoValidator>();
+builder.Services.AddTransient<IValidator<int>, ArchiveValidator>();
 
 var app = builder.Build();
 
