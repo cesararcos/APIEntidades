@@ -3,11 +3,6 @@ using APIEntidades.Controllers;
 using APIEntidades.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EntidadesTest
 {
@@ -49,7 +44,7 @@ namespace EntidadesTest
             var result = _controller.GetGames();
 
             // Assert: verificar el resultado
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
 
         [Fact]
@@ -82,7 +77,7 @@ namespace EntidadesTest
             var result = _controller.GetGamesPaginate(param);
 
             // Assert: verificar el resultado
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
 
         [Fact]
@@ -105,7 +100,92 @@ namespace EntidadesTest
             var result = _controller.GetGamesById(guid);
 
             // Assert: verificar el resultado
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void GetStatusSaveGame()
+        {
+            // Arrange: configurar el mock para devolver videojuego
+            var game = new VideoJuegosDto { Nombre = "Game 1", Compania = "Compania 1", Ano = 1, Precio = 1, Puntaje = 1, FechaActualizacion = null, Usuario = null };
+
+            var mockVideoGames = new ResponseDto<bool>
+            {
+                Success = true,
+                Data = true
+            };
+
+            _mockVideoJuegosAppService.Setup(service => service.SaveVideoGame(game)).Returns(mockVideoGames);// Simular que el guardado es exitoso
+
+            // Act: llamar al método del controlador
+            var result = _controller.SaveVideoGame(game);
+
+            // Assert: verificar el resultado
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void GetStatusSaveGameWhenSaveFails()
+        {
+            // Arrange
+            var game = new VideoJuegosDto { Nombre = "Game 1", Compania = "Compania 1", Ano = 1, Precio = 1, Puntaje = 1, FechaActualizacion = null, Usuario = null };
+
+            var mockVideoGames = new ResponseDto<bool>
+            {
+                Success = false,
+                Data = false
+            };
+            _mockVideoJuegosAppService.Setup(service => service.SaveVideoGame(game)).Returns(mockVideoGames); // Simular que el guardado falla
+
+            // Act
+            var result = _controller.SaveVideoGame(game);
+
+            // Assert
+            Assert.IsType<NotFoundObjectResult>(result); // Verificar que el resultado es NotFound (404)
+        }
+
+        [Fact]
+        public void GetStatusEditGame()
+        {
+            // Arrange: configurar el mock para devolver videojuego
+            var id = "d768ec7d-2d64-43b2-b32c-9ba861b4e8a2";
+            Guid guid = new(id);
+            var game = new VideoJuegosDto { Nombre = "Game 1", Compania = "Compania 1", Ano = 1, Precio = 1, Puntaje = 1, FechaActualizacion = null, Usuario = null };
+
+            var mockVideoGames = new ResponseDto<bool>
+            {
+                Success = true,
+                Data = true
+            };
+
+            _mockVideoJuegosAppService.Setup(service => service.EditVideoGame(guid, game)).Returns(mockVideoGames);
+
+            // Act: llamar al método del controlador
+            var result = _controller.EditVideoGame(guid, game);
+
+            // Assert: verificar el resultado
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void GetStatusDeleteGame()
+        {
+            var id = "d768ec7d-2d64-43b2-b32c-9ba861b4e8a2";
+            Guid guid = new(id);
+
+            var mockVideoGames = new ResponseDto<bool>
+            {
+                Success = true,
+                Data = true
+            };
+
+            _mockVideoJuegosAppService.Setup(service => service.DeleteVideoGame(guid)).Returns(mockVideoGames);
+
+            // Act: llamar al método del controlador
+            var result = _controller.DeleteVideoGame(guid);
+
+            // Assert: verificar el resultado
+            Assert.IsType<OkObjectResult>(result);
         }
     }
 }
