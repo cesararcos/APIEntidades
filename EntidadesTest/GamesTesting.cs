@@ -187,5 +187,47 @@ namespace EntidadesTest
             // Assert: verificar el resultado
             Assert.IsType<OkObjectResult>(result);
         }
+
+        [Fact]
+        public void GetStatusLogin()
+        {
+            // Arrange: configurar el mock
+            var ingreso = new IngresoDto { Correo = "test@gmail.com", Clave = "123" };
+
+            var mockLogin = new ResponseDto<string>
+            {
+                Success = true,
+                Data = "fake-jwt-token"
+            };
+
+            _mockUsuarioAppService.Setup(service => service.Login(ingreso)).Returns(mockLogin);
+
+            // Act: llamar al método del controlador
+            var result = _controller.Login(ingreso);
+
+            // Assert: verificar el resultado
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void GetStatusRegister()
+        {
+            // Arrange: configurar el mock
+            var ingreso = new UsuarioDto { Correo = "test@gmail.com", Clave = "123", Usuario = "User" };
+
+            var mockRegister = new ResponseDto<bool>
+            {
+                Success = true,
+                Data = true
+            };
+
+            _mockUsuarioAppService.Setup(service => service.Register(ingreso)).Returns(mockRegister);
+
+            // Act: llamar al método del controlador
+            var result = _controller.Register(ingreso);
+
+            // Assert: verificar el resultado
+            Assert.IsType<OkObjectResult>(result);
+        }
     }
 }
