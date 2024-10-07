@@ -3,6 +3,7 @@ using APIEntidades.Controllers;
 using APIEntidades.Domain.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Text;
 
 namespace EntidadesTest
 {
@@ -228,6 +229,45 @@ namespace EntidadesTest
 
             // Assert: verificar el resultado
             Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void GetExportRanking()
+        {
+            // Arrange
+            int validTop = 5;
+            var mockExport = new List<GameRankingDto>
+            {
+                new() { Title = "Game 1", Company = "Company 1", Score = 95.5m, Classification = "GOTY" },
+                new() { Title = "Game 2", Company = "Company 2", Score = 90.0m, Classification = "AAA" }
+            };
+
+            var csvData = new StringBuilder();
+            csvData.AppendLine("Titulo|Compania|Puntaje|Clasificacion");
+
+            foreach (var item in mockExport)
+            {
+                csvData.AppendLine($"{item.Title}|{item.Company}|{item.Score}|{item.Classification}");
+            }
+
+            var byteArray = Encoding.UTF8.GetBytes(csvData.ToString());
+            var stream = new MemoryStream(byteArray);
+
+            var mock = new ResponseDto<MemoryStream>
+            {
+                Success = true,
+                Data = stream
+            };
+
+            _mockVideoJuegosAppService.Setup(service => service.GetArchiveCsv(validTop)).Returns(mock);
+
+            // Act
+            var result = _controller.GetArchiveCsv(validTop);
+
+            // Assert
+            var fileResult = Assert.IsType<FileStreamResult>(result);
+            Assert.Equal("text/csv", fileResult.ContentType);
+            Assert.Equal("ranking_videojuegos.csv", fileResult.FileDownloadName);
         }
     }
 }
