@@ -7,5 +7,7 @@
         public const string NOT_EXIST = "No existen registros.";
 
         public const string GAME_EXIST = "El videojuego ya fue creado.";
+
+        public const string EMPTY = "Faltan campos por diligenciar.";
     }
 }

@@ -56,6 +56,7 @@ builder.Services.AddTransient<IUtilities, Utilities>();
 builder.Services.AddTransient<IValidator<UsuarioDto>, UsuarioValidator>();
 builder.Services.AddTransient<IValidator<IngresoDto>, IngresoValidator>();
 builder.Services.AddTransient<IValidator<int>, ArchiveValidator>();
+builder.Services.AddTransient<IValidator<VideoJuegosDto>, GameValidator>();
 
 var app = builder.Build();
 

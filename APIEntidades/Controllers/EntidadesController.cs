@@ -85,7 +85,7 @@ namespace APIEntidades.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         [Route(nameof(SaveVideoGame))]
         public IActionResult SaveVideoGame(VideoJuegosDto videoJuegosDto)
         {
@@ -98,7 +98,7 @@ namespace APIEntidades.Controllers
         }
 
         [HttpPut]
-        //[Authorize]
+        [Authorize]
         [Route("{id:Guid}/" + nameof(EditVideoGame))]
         public IActionResult EditVideoGame(Guid id, VideoJuegosDto videoJuegosDto)
         {
@@ -111,7 +111,7 @@ namespace APIEntidades.Controllers
         }
 
         [HttpDelete]
-        //[Authorize]
+        [Authorize]
         [Route("{id:Guid}/" + nameof(DeleteVideoGame))]
         public IActionResult DeleteVideoGame(Guid id)
         {
@@ -124,7 +124,7 @@ namespace APIEntidades.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         [Route(nameof(GetArchiveCsv))]
         public IActionResult GetArchiveCsv([FromQuery] int? top)
         {
@@ -137,7 +137,7 @@ namespace APIEntidades.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         [Route(nameof(GetProcedure))]
         public IActionResult GetProcedure([FromQuery] int cantidad)
         {

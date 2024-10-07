@@ -17,10 +17,11 @@ using System.Text;
 
 namespace APIEntidades.Application
 {
-    public class VideoJuegosAppService(EntidadesDbContext context, IValidator<int> archiveValidator, IMemoryCache memoryCache) : IVideoJuegosAppService
+    public class VideoJuegosAppService(EntidadesDbContext context, IValidator<int> archiveValidator, IValidator<VideoJuegosDto> gameValidator, IMemoryCache memoryCache) : IVideoJuegosAppService
     {
         private readonly EntidadesDbContext _context = context;
         private readonly IValidator<int> _archiveValidator = archiveValidator;
+        private readonly IValidator<VideoJuegosDto> _gameValidator = gameValidator;
         private readonly IMemoryCache _memoryCache = memoryCache;
         private readonly string cacheKey = "VideoGameList"; // Clave para el cache
 
@@ -171,16 +172,16 @@ namespace APIEntidades.Application
         {
             try
             {
-                //var result = _usuarioValidator.Validate(usuario);
+                var result = _gameValidator.Validate(videoJuegosDto);
 
-                //if (!result.IsValid)
-                //{
-                //    return new ResponseDto<bool>
-                //    {
-                //        Success = false,
-                //        ErrorMessage = result.Errors.First().ErrorMessage
-                //    };
-                //}
+                if (!result.IsValid)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = result.Errors.First().ErrorMessage
+                    };
+                }
 
                 var findGame = _context?.Videojuegos?.FirstOrDefault(x => x.Nombre == videoJuegosDto.Nombre) ?? null;
 
@@ -227,16 +228,25 @@ namespace APIEntidades.Application
         {
             try
             {
-                //var result = _usuarioValidator.Validate(usuario);
+                if (id == Guid.Empty)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.EMPTY
+                    };
+                }
 
-                //if (!result.IsValid)
-                //{
-                //    return new ResponseDto<bool>
-                //    {
-                //        Success = false,
-                //        ErrorMessage = result.Errors.First().ErrorMessage
-                //    };
-                //}
+                var result = _gameValidator.Validate(videoJuegosDto);
+
+                if (!result.IsValid)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = result.Errors.First().ErrorMessage
+                    };
+                }
 
                 Videojuegos? findGame = _context?.Videojuegos?.FirstOrDefault(x => x.Id == id) ?? null;
 
@@ -254,6 +264,8 @@ namespace APIEntidades.Application
                 findGame.Ano = videoJuegosDto.Ano;
                 findGame.Precio = videoJuegosDto.Precio;
                 findGame.Puntaje = videoJuegosDto.Puntaje;
+                findGame.FechaActualizacion = DateTime.Now;
+                findGame.Usuario = videoJuegosDto.Usuario;
 
                 _context!.SaveChanges();
 
@@ -277,16 +289,14 @@ namespace APIEntidades.Application
         {
             try
             {
-                //var result = _usuarioValidator.Validate(usuario);
-
-                //if (!result.IsValid)
-                //{
-                //    return new ResponseDto<bool>
-                //    {
-                //        Success = false,
-                //        ErrorMessage = result.Errors.First().ErrorMessage
-                //    };
-                //}
+                if (id == Guid.Empty)
+                {
+                    return new ResponseDto<bool>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.EMPTY
+                    };
+                }
 
                 Videojuegos? findGame = _context?.Videojuegos?.FirstOrDefault(x => x.Id == id) ?? null;
 
@@ -423,8 +433,6 @@ namespace APIEntidades.Application
                     CodigoDeError = (int)command.Parameters["@CodigoDeError"].Value,
                     MensajeDeError = command.Parameters["@MensajeDeError"].Value != DBNull.Value ? (string)command.Parameters["@MensajeDeError"].Value : string.Empty
                 };
-                //int codigoDeError
-                //string mensajeDeError
                 conn.Close();
 
                 return new ResponseDto<ProcedureDto>
