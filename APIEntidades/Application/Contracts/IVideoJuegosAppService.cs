@@ -12,5 +12,6 @@ namespace APIEntidades.Application.Contracts
         ResponseDto<bool> EditVideoGame(Guid id, VideoJuegosDto videoJuegosDto);
         ResponseDto<bool> DeleteVideoGame(Guid id);
         ResponseDto<MemoryStream> GetArchiveCsv(int? top);
+        ResponseDto<ProcedureDto> GetProcedure(int cantidad);
     }
 }

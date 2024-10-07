@@ -6,10 +6,12 @@ using APIEntidades.Infrastructure.Helpers;
 using APIEntidades.Utilities.Validators;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -325,7 +327,7 @@ namespace APIEntidades.Application
 
                 if (top.HasValue)
                     result = _archiveValidator.Validate(top!.Value);
-                
+
                 if (!result.IsValid)
                 {
                     return new ResponseDto<MemoryStream>
@@ -382,6 +384,58 @@ namespace APIEntidades.Application
             catch (Exception ex)
             {
                 return new ResponseDto<MemoryStream>
+                {
+                    Success = false,
+                    ErrorMessage = $"An error occurred: {ex.Message}"
+                };
+            }
+        }
+
+        public ResponseDto<ProcedureDto> GetProcedure(int cantidad)
+        {
+            try
+            {
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand command = conn.CreateCommand();
+                conn.Open();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "GenerarCalificacionesAleatorias";
+                command.Parameters.Add("@Cantidad", SqlDbType.Int).Value = cantidad;
+                // Definir el parámetro OUTPUT
+                SqlParameter codigoDeErrorParam = new()
+                {
+                    ParameterName = "@CodigoDeError",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.Output  // Definir como parámetro OUTPUT
+                };
+                command.Parameters.Add(codigoDeErrorParam);
+                SqlParameter mensajeDeErrorParam = new()
+                {
+                    ParameterName = "@MensajeDeError",
+                    SqlDbType = SqlDbType.VarChar,
+                    Size = 50,
+                    Direction = ParameterDirection.Output  // Definir como parámetro OUTPUT
+                };
+                command.Parameters.Add(mensajeDeErrorParam);
+                command.ExecuteNonQuery();
+                ProcedureDto procedure = new()
+                {
+                    CodigoDeError = (int)command.Parameters["@CodigoDeError"].Value,
+                    MensajeDeError = command.Parameters["@MensajeDeError"].Value != DBNull.Value ? (string)command.Parameters["@MensajeDeError"].Value : string.Empty
+                };
+                //int codigoDeError
+                //string mensajeDeError
+                conn.Close();
+
+                return new ResponseDto<ProcedureDto>
+                {
+                    Success = true,
+                    Data = procedure
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<ProcedureDto>
                 {
                     Success = false,
                     ErrorMessage = $"An error occurred: {ex.Message}"

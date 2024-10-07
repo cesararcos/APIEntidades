@@ -135,5 +135,18 @@ namespace APIEntidades.Controllers
 
             return File(responde.Data, "text/csv", "ranking_videojuegos.csv");
         }
+
+        [HttpGet]
+        //[Authorize]
+        [Route(nameof(GetProcedure))]
+        public IActionResult GetProcedure([FromQuery] int cantidad)
+        {
+            var responde = _videoJuegosAppService.GetProcedure(cantidad);
+
+            if (!responde.Success)
+                return NotFound(responde.ErrorMessage);
+
+            return Ok(responde);
+        }
     }
 }
