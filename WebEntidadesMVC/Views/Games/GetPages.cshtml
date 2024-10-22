@@ -1,0 +1,72 @@
+﻿@model PaginacionViewModel<VideojuegosViewModel>
+
+<h1>Usuarios</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Compania</th>
+            <th>Ano</th>
+            <th>Precio (Dolares)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model.Elementos)
+        {
+            <tr>
+                <td>@usuario.Nombre</td>
+                <td>@usuario.Compania</td>
+                <td>@usuario.Ano</td>
+                <td>@usuario.Precio</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Controles de paginación -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @if (Model.TienePaginaAnterior)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual - 1)">Anterior</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPaginas; i++)
+        {
+            if (i == Model.PaginaActual)
+            {
+                <li class="page-item active">
+                    <span class="page-link">@i</span>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="GetPages" asp-route-pagina="@i">@i</a>
+                </li>
+            }
+        }
+
+        @if (Model.TienePaginaSiguiente)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual + 1)">Siguiente</a>
+            </li>
+        }
+        else
+        {
+            <li class="page-item disabled">
+                <span class="page-link">Siguiente</span>
+            </li>
+        }
+    </ul>
+</nav>

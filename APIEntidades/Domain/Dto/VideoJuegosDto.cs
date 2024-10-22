@@ -9,5 +9,6 @@
         public decimal? Puntaje { get; set; }
         public DateTime? FechaActualizacion { get; set; }
         public string? Usuario { get; set; }
+        public int? TotalPaginas { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebEntidadesMVC.Models;
 using WebEntidadesMVC.Utilities;
 
 namespace WebEntidadesMVC.Controllers
@@ -7,7 +8,7 @@ namespace WebEntidadesMVC.Controllers
     {
         private readonly HttpClient _httpClient = httpClient;
 
-        public async Task<IActionResult> GetPages()
+        public async Task<IActionResult> GetPages(int Pagina = 1)
         {
             GetServices getServices = new();
 
@@ -17,10 +18,21 @@ namespace WebEntidadesMVC.Controllers
             // Recuperar el string almacenado en la sesión
             var token = HttpContext.Session.GetString("AccessToken");
 
-            //var GameFilter = await getServices.GetGamesAsync();
+            var gameFilter = await getServices.GetGamesAsync(Pagina, token!);
 
+            if (gameFilter.Count() == 0)
+                return NotFound(); // REDIRECCIONAR A VISTA ERROR O LOGIN**
 
-            return RedirectToAction("Index", "Home");
+            int totalPag = gameFilter.FirstOrDefault()?.TotalPaginas ?? 0;
+            var modeloPaginacion = new PaginacionViewModel<VideojuegosViewModel>
+            {
+                Elementos = gameFilter.ToList(),
+                PaginaActual = Pagina,
+                TotalPaginas = totalPag,
+                TamanoPagina = 5
+            };
+
+            return View(modeloPaginacion);
         }
     }
 }

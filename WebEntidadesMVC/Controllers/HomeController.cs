@@ -62,10 +62,6 @@ namespace WebEntidadesMVC.Controllers
 
                 return RedirectToAction("GetPages", "Games");
 
-                // Autenticación y llamada a la API
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
                 var response = await _httpClient.GetAsync("http://localhost:5275/api/Entidades/GetGames");
 
                 if (response.IsSuccessStatusCode)

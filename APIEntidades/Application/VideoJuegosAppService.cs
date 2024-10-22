@@ -136,11 +136,16 @@ namespace APIEntidades.Application
                     consulta = consulta.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre);
                 if (!string.IsNullOrEmpty(filtroVideoJuegoDto.Compania))
                     consulta = consulta.Where(x => x.Compania == filtroVideoJuegoDto.Compania);
-                if (filtroVideoJuegoDto.Ano.HasValue)
+                if (filtroVideoJuegoDto.Ano > 0)
                     consulta = consulta.Where(x => x.Ano == filtroVideoJuegoDto.Ano);
 
+                // Total de registros después de aplicar los filtros
+                var totalRegistros = consulta.Count();
+
                 consulta = consulta.Skip((filtroVideoJuegoDto.Page - 1) * pageSize).Take(pageSize);
-                //var gamesFilter = _context?.Videojuegos?.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre || x.Compania == filtroVideoJuegoDto.Compania || x.Ano == filtroVideoJuegoDto.Ano).Skip((filtroVideoJuegoDto.Page - 1) * pageSize).Take(pageSize).ToList() ?? null;
+                
+                // Calcular el total de páginas
+                int totalPaginas = (int)Math.Ceiling(totalRegistros / (double)pageSize);
 
                 IEnumerable<VideoJuegosDto> gamesList = consulta.Select(u => new VideoJuegosDto()
                 {
@@ -151,6 +156,7 @@ namespace APIEntidades.Application
                     Puntaje = u.Puntaje,
                     FechaActualizacion = u.FechaActualizacion,
                     Usuario = u.Usuario,
+                    TotalPaginas = totalPaginas
                 }).ToList();
 
                 if (gamesList.Count() == 0)
