@@ -5,7 +5,9 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIEntidades", "APIEntidades\APIEntidades.csproj", "{E45F7012-F72D-4D2A-B2B2-B8AC974746B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntidadesTest", "EntidadesTest\EntidadesTest.csproj", "{0318442D-08E3-43ED-8772-3D5709B26216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntidadesTest", "EntidadesTest\EntidadesTest.csproj", "{0318442D-08E3-43ED-8772-3D5709B26216}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEntidadesMVC", "WebEntidadesMVC\WebEntidadesMVC.csproj", "{68705B27-56CC-4F9D-A9BC-DF4DCEF5909C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0318442D-08E3-43ED-8772-3D5709B26216}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0318442D-08E3-43ED-8772-3D5709B26216}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0318442D-08E3-43ED-8772-3D5709B26216}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68705B27-56CC-4F9D-A9BC-DF4DCEF5909C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68705B27-56CC-4F9D-A9BC-DF4DCEF5909C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68705B27-56CC-4F9D-A9BC-DF4DCEF5909C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68705B27-56CC-4F9D-A9BC-DF4DCEF5909C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
