@@ -9,17 +9,18 @@ using WebEntidadesMVC.Utilities;
 
 namespace WebEntidadesMVC.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(HttpClient httpClient) : Controller
     {
-        private readonly HttpClient _httpClient;
-
-        public HomeController(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        private readonly HttpClient _httpClient = httpClient;
 
         public IActionResult Index()
         {
+            if (HttpContext.Session.GetString("Usuario") != null)
+            {
+                // Recuperar el string almacenado en la sesión
+                var usuario = HttpContext.Session.GetString("Usuario");
+            }
+            
             return View();
         }
 
@@ -61,30 +62,8 @@ namespace WebEntidadesMVC.Controllers
 
                 if (string.IsNullOrEmpty(token))
                     return Unauthorized();
-
-                //// Obtener el token de acceso del contexto de autenticación
-                //var accessToken = await HttpContext.GetTokenAsync(ingresoViewModel.Correo!);
-
-                //// Verificamos que el token no sea nulo o vacío
-                //if (string.IsNullOrEmpty(accessToken))
-                //{
-                //    return View("Error", "No se encontró un token de acceso válido.");
-                //}
-
-                // Guardar el token como una cookie
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = false,  // Para que solo sea accesible vía HTTP y no por scripts en el cliente
-                    IsEssential = true,
-                    //Secure = true,    // Solo enviar la cookie a través de HTTPS
-                    SameSite = SameSiteMode.None, // Para proteger contra CSRF (ajústalo según tus necesidades)
-                    //Expires = DateTimeOffset.UtcNow.AddHours(1) // Configurar tiempo de expiración de la cookie (1 hora, en este caso)
-                };
-
-                // Guardamos el token de acceso como cookie
-                HttpContext.Response.Cookies.Append("AccessToken", token, cookieOptions);
                 
-                // Ahora puedes continuar haciendo la llamada a la API
+                // Autenticación y llamada a la API
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
@@ -97,8 +76,8 @@ namespace WebEntidadesMVC.Controllers
                     {
                         Compania = x.Compania
                     }).ToList();
-                    return View("Privacy");
-                    //return RedirectToAction();
+                    //return View("Privacy");
+                    return RedirectToAction("GetPages", "Games");
                 }
                 else
                 {

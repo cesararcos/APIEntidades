@@ -1,0 +1,26 @@
+﻿@model IEnumerable<VideojuegosViewModel>
+
+<h1>Gestores</h1>
+
+@if (Model != null && Model.Count() > 0)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var gestor in Model)
+            {
+                <tr>
+                    <td>@gestor.Compania</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se encontraron gestores.</p>
+}
