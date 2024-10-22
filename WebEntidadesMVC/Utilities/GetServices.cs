@@ -2,7 +2,7 @@
 
 namespace WebEntidadesMVC.Utilities
 {
-    public class GetToken
+    public class GetServices
     {
         public async Task<string> GetTokenAsync(string username, string password)
         {
@@ -18,7 +18,7 @@ namespace WebEntidadesMVC.Utilities
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                return result!.Token!; // Supongamos que el token está en la propiedad "Token"
+                return result!.Token!;
             }
 
             return null;

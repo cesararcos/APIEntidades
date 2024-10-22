@@ -10,11 +10,4 @@
         public DateTime? FechaActualizacion { get; set; }
         public string? Usuario { get; set; }
     }
-
-    public class ResponseDto<T>
-    {
-        public bool Success { get; set; }
-        public string? ErrorMessage { get; set; }
-        public T Data { get; set; }
-    }
 }

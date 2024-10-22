@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebEntidadesMVC.Utilities;
 
 namespace WebEntidadesMVC.Controllers
 {
@@ -6,12 +7,17 @@ namespace WebEntidadesMVC.Controllers
     {
         private readonly HttpClient _httpClient = httpClient;
 
-        public IActionResult GetPages()
+        public async Task<IActionResult> GetPages()
         {
-            // Creación Variable session
-            HttpContext.Session.SetString("Usuario", "Juan Pérez");
+            GetServices getServices = new();
 
-            
+            if (HttpContext.Session.GetString("AccessToken") == null)
+                return NotFound(); // REDIRECCIONAR A VISTA ERROR O LOGIN**
+
+            // Recuperar el string almacenado en la sesión
+            var usuario = HttpContext.Session.GetString("AccessToken");
+
+
             return RedirectToAction("Index", "Home");
         }
     }

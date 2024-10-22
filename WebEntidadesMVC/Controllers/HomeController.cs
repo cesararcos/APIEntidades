@@ -15,12 +15,6 @@ namespace WebEntidadesMVC.Controllers
 
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("Usuario") != null)
-            {
-                // Recuperar el string almacenado en la sesión
-                var usuario = HttpContext.Session.GetString("Usuario");
-            }
-            
             return View();
         }
 
@@ -57,12 +51,17 @@ namespace WebEntidadesMVC.Controllers
         {
             try
             {
-                GetToken getToken = new(); 
-                var token = await getToken.GetTokenAsync(ingresoViewModel!.Correo!, ingresoViewModel!.Clave!);
+                GetServices getServices = new();
+                var token = await getServices.GetTokenAsync(ingresoViewModel!.Correo!, ingresoViewModel!.Clave!);
 
                 if (string.IsNullOrEmpty(token))
                     return Unauthorized();
-                
+
+                // Creación Variable session
+                HttpContext.Session.SetString("AccessToken", token);
+
+                return RedirectToAction("GetPages", "Games");
+
                 // Autenticación y llamada a la API
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -126,13 +125,6 @@ namespace WebEntidadesMVC.Controllers
 
         public IActionResult Privacy()
         {
-            // Recuperar el token de la cookie
-            if (HttpContext.Request.Cookies.ContainsKey("AccessToken"))
-            {
-                // Recupera el valor de la cookie
-                string accessTokenFromCookie = HttpContext.Request.Cookies["AccessToken"]!;
-
-            }
 
             return View();
         }
