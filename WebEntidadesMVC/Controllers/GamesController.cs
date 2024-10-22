@@ -15,7 +15,9 @@ namespace WebEntidadesMVC.Controllers
                 return NotFound(); // REDIRECCIONAR A VISTA ERROR O LOGIN**
 
             // Recuperar el string almacenado en la sesión
-            var usuario = HttpContext.Session.GetString("AccessToken");
+            var token = HttpContext.Session.GetString("AccessToken");
+
+            //var GameFilter = await getServices.GetGamesAsync();
 
 
             return RedirectToAction("Index", "Home");

@@ -130,18 +130,19 @@ namespace APIEntidades.Application
                     filtroVideoJuegoDto.Page = 1;
 
                 int pageSize = 5;
-                var gamesFilter = _context?.Videojuegos?.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre || x.Compania == filtroVideoJuegoDto.Compania || x.Ano == filtroVideoJuegoDto.Ano).Skip((filtroVideoJuegoDto.Page - 1) * pageSize).Take(pageSize).ToList() ?? null;
+                var consulta = _context.Videojuegos.AsQueryable();
 
-                if (gamesFilter == null)
-                {
-                    return new ResponseDto<IEnumerable<VideoJuegosDto>>
-                    {
-                        Success = false,
-                        ErrorMessage = Constants.NOT_EXIST
-                    };
-                }
+                if (!string.IsNullOrEmpty(filtroVideoJuegoDto.Nombre))
+                    consulta = consulta.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre);
+                if (!string.IsNullOrEmpty(filtroVideoJuegoDto.Compania))
+                    consulta = consulta.Where(x => x.Compania == filtroVideoJuegoDto.Compania);
+                if (filtroVideoJuegoDto.Ano.HasValue)
+                    consulta = consulta.Where(x => x.Ano == filtroVideoJuegoDto.Ano);
 
-                IEnumerable<VideoJuegosDto> gamesList = gamesFilter.Select(u => new VideoJuegosDto()
+                consulta = consulta.Skip((filtroVideoJuegoDto.Page - 1) * pageSize).Take(pageSize);
+                //var gamesFilter = _context?.Videojuegos?.Where(x => x.Nombre == filtroVideoJuegoDto.Nombre || x.Compania == filtroVideoJuegoDto.Compania || x.Ano == filtroVideoJuegoDto.Ano).Skip((filtroVideoJuegoDto.Page - 1) * pageSize).Take(pageSize).ToList() ?? null;
+
+                IEnumerable<VideoJuegosDto> gamesList = consulta.Select(u => new VideoJuegosDto()
                 {
                     Nombre = u.Nombre,
                     Compania = u.Compania,
@@ -152,10 +153,19 @@ namespace APIEntidades.Application
                     Usuario = u.Usuario,
                 }).ToList();
 
+                if (gamesList.Count() == 0)
+                {
+                    return new ResponseDto<IEnumerable<VideoJuegosDto>>
+                    {
+                        Success = false,
+                        ErrorMessage = Constants.NOT_EXIST
+                    };
+                }
+
                 return new ResponseDto<IEnumerable<VideoJuegosDto>>
                 {
                     Success = true,
-                    Data = gamesList
+                    Data = gamesList.ToList()
                 };
             }
             catch (Exception ex)
