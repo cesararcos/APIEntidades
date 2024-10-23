@@ -1,0 +1,54 @@
+﻿<div class="container mt-5">
+    <h2>Generar y Descargar Ranking CSV</h2>
+    <button id="downloadCsv" class="btn btn-primary">Descargar CSV</button>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var token = '@ViewBag.AccessToken';
+            $("#downloadCsv").click(function () {
+                $.ajax({
+                    url: 'http://localhost:5275/api/Entidades/GetArchiveCsv',
+                    method: "GET",
+                    xhrFields: {
+                        responseType: 'blob' // Esto es clave para manejar archivos binarios
+                    },
+                    headers: {
+                        'Authorization': 'Bearer ' + token // Incluimos el token en los headers
+                    },
+                    success: function (data, status, xhr) {
+                        // Obtener el nombre del archivo desde el encabezado 'Content-Disposition' (si está presente)
+                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                        var filename = "";
+
+                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            var matches = filenameRegex.exec(disposition);
+                            if (matches != null && matches[1]) {
+                                filename = matches[1].replace(/['"]/g, '');
+                            }
+                        }
+
+                        // Crear un objeto Blob con el tipo de contenido recibido
+                        var blob = new Blob([data], { type: 'text/csv' });
+
+                        // Crear un enlace temporal para descargar el archivo
+                        var url = window.URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename || 'ranking_videojuegos.csv';
+                        document.body.appendChild(a);
+                        a.click();
+
+                        // Limpiar el URL del objeto después de la descarga
+                        window.URL.revokeObjectURL(url);
+                    },
+                    error: function () {
+                        alert("Error al descargar el archivo CSV.");
+                    }
+                });
+            });
+        });
+    </script>
+}

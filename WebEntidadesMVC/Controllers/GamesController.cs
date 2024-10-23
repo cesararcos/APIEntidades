@@ -60,5 +60,17 @@ namespace WebEntidadesMVC.Controllers
 
             return RedirectToAction("GetPages");
         }
+
+        public IActionResult GetArchiveCsv()
+        {
+            if (HttpContext.Session.GetString("AccessToken") == null)
+                return RedirectToAction("Index", "Home");
+
+            // Recuperar el string almacenado en la sesión
+            var token = HttpContext.Session.GetString("AccessToken");
+            ViewBag.AccessToken = token;
+
+            return View();
+        }
     }
 }
