@@ -4,10 +4,8 @@ using WebEntidadesMVC.Utilities;
 
 namespace WebEntidadesMVC.Controllers
 {
-    public class GamesController(HttpClient httpClient) : Controller
+    public class GamesController() : Controller
     {
-        private readonly HttpClient _httpClient = httpClient;
-
         public async Task<IActionResult> GetPages(int Pagina = 1)
         {
             GetServices getServices = new();
