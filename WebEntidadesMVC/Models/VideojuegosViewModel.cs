@@ -2,6 +2,7 @@
 {
     public class VideojuegosViewModel
     {
+        public Guid Id { get; set; }
         public string? Nombre { get; set; }
         public string? Compania { get; set; }
         public int? Ano { get; set; }

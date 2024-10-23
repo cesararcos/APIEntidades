@@ -57,6 +57,7 @@ namespace WebEntidadesMVC.Utilities
                 {
                     videojuegosViewModels = result.Data.Select(x => new VideojuegosViewModel
                     {
+                        Id = x.Id,
                         Nombre = x.Nombre,
                         Ano = x.Ano,
                         Compania = x.Compania,

@@ -13,7 +13,16 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5011")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -60,12 +69,14 @@ builder.Services.AddTransient<IValidator<VideoJuegosDto>, GameValidator>();
 
 var app = builder.Build();
 
+app.UseCors("AllowSpecificOrigin");
+
 app.UseAuthentication(); // Middleware para autenticar usuarios
 app.UseAuthorization();  // Middleware para verificar las autorizaciones
 
 app.UseCors(options =>
 {
-    //options.WithOrigins("http://localhost:3000");
+    /*options.WithOrigins("http://localhost:5011");*/ /*http://localhost:3000*/
     options.AllowAnyMethod();
     options.AllowAnyHeader();
 });

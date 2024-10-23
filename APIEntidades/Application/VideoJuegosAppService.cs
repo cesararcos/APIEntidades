@@ -149,6 +149,7 @@ namespace APIEntidades.Application
 
                 IEnumerable<VideoJuegosDto> gamesList = consulta.Select(u => new VideoJuegosDto()
                 {
+                    Id = u.Id,
                     Nombre = u.Nombre,
                     Compania = u.Compania,
                     Ano = u.Ano,

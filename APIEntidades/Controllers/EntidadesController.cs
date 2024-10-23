@@ -61,14 +61,20 @@ namespace APIEntidades.Controllers
         [HttpPost]
         [Authorize]
         [Route(nameof(EntidadesController.GetGamesById))]
-        public IActionResult GetGamesById([FromBody] Guid id)
+        public IActionResult GetGamesById(FilterGetGamesById filterGetGamesById)
         {
-            var responde = _videoJuegosAppService.GetById(id);
+            var responde = _videoJuegosAppService.GetById(filterGetGamesById.Id);
 
             if (!responde.Success)
                 return NotFound(responde.ErrorMessage);
-
-            return Ok(responde);
+            
+            return Ok(new
+            {
+                Nombre = responde.Data.Nombre,
+                Compania = responde.Data.Compania,
+                Ano = responde.Data.Ano,
+                Precio = responde.Data.Precio
+            });
         }
 
         [HttpPost]

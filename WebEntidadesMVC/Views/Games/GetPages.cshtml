@@ -1,24 +1,24 @@
 ﻿@model PaginacionViewModel<VideojuegosViewModel>
 
-<h1>Usuarios</h1>
+<h1>VideoJuegos</h1>
 
 <table class="table">
     <thead>
         <tr>
             <th>Nombre</th>
             <th>Compania</th>
-            <th>Ano</th>
-            <th>Precio (Dolares)</th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var usuario in Model.Elementos)
         {
-            <tr>
+            <tr data-id="@usuario.Id" class="table-row">
                 <td>@usuario.Nombre</td>
                 <td>@usuario.Compania</td>
-                <td>@usuario.Ano</td>
-                <td>@usuario.Precio</td>
+                <td>
+                    <button class="btn btn-primary btn-detalle" type="button">Ver detalles</button>
+                </td>
             </tr>
         }
     </tbody>
@@ -70,3 +70,64 @@
         }
     </ul>
 </nav>
+
+
+<!-- Modal -->
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleModalLabel">Detalles del registro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Aquí mostraremos los detalles del registro seleccionado -->
+                <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
+                <p><strong>Compania:</strong> <span id="modalCompania"></span></p>
+                <p><strong>Ano:</strong> <span id="modalAno"></span></p>
+                <p><strong>Precio (Dolares):</strong> <span id="modalPrecio"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        var token = '@ViewBag.AccessToken';
+
+        // Evento de clic en los botones "Ver detalles"
+        $('.btn-detalle').on('click', function () {
+            // Obtenemos la fila asociada al botón que fue clicado
+            var row = $(this).closest('tr');
+
+            // Extraemos los datos de la fila (el ID del gestor)
+            var id = row.data('id').toString();
+            // Hacemos la llamada a la API usando POST y enviamos el ID en el cuerpo
+            $.ajax({
+                url: 'http://localhost:5275/api/Entidades/GetGamesById',  // La URL del endpoint POST
+                method: 'POST',
+                contentType: 'application/json', // Especificamos que enviamos JSON
+                data: JSON.stringify({ id: id }), // Convertimos el ID a JSON y lo enviamos en el cuerpo
+                headers: {
+                    'Authorization': 'Bearer ' + token // Incluimos el token en los headers
+                },
+                success: function (data) {
+                    $('#modalNombre').text(data.nombre);
+                    $('#modalCompania').text(data.compania);
+                    $('#modalAno').text(data.ano);
+                    $('#modalPrecio').text(data.precio);
+
+                    // Mostramos la modal
+                    $('#detalleModal').modal('show');
+                },
+                error: function (error) {
+                    console.error('Ocurrió un error:', error);
+                }
+            });
+        });
+    });
+</script>

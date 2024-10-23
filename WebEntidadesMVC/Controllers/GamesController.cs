@@ -32,6 +32,8 @@ namespace WebEntidadesMVC.Controllers
                 TamanoPagina = 5
             };
 
+            ViewBag.AccessToken = token;
+
             return View(modeloPaginacion);
         }
     }
