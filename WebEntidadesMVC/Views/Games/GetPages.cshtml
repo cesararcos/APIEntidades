@@ -1,5 +1,16 @@
 ﻿@model PaginacionViewModel<VideojuegosViewModel>
 
+@{
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <h1>VideoJuegos</h1>
 
 <table class="table">

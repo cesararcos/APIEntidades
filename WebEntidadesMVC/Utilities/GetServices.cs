@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebEntidadesMVC.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebEntidadesMVC.Utilities
 {
@@ -71,6 +73,35 @@ namespace WebEntidadesMVC.Utilities
             }
 
             return videojuegosViewModels;
+        }
+
+        public async Task<bool> CreateGamesAsync(string nombre, string compania, int? ano, decimal? precio, decimal? puntaje, string token)
+        {
+            var gameInfo = new
+            {
+                Nombre = nombre,
+                Compania = compania,
+                Ano = ano,
+                Precio = precio,
+                Puntaje = puntaje
+            };
+
+            // Autenticación y llamada a la API
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.PostAsJsonAsync("SaveVideoGame", gameInfo);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ResponseDto<bool>>();
+
+                if (result!.Success && result!.Data)
+                    return result.Data;
+                
+            }
+
+            return false;
         }
 
     }

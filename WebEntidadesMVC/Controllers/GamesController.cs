@@ -11,7 +11,7 @@ namespace WebEntidadesMVC.Controllers
             GetServices getServices = new();
 
             if (HttpContext.Session.GetString("AccessToken") == null)
-                return NotFound(); // REDIRECCIONAR A VISTA ERROR O LOGIN**
+                return RedirectToAction("Index", "Home");
 
             // Recuperar el string almacenado en la sesión
             var token = HttpContext.Session.GetString("AccessToken");
@@ -19,7 +19,7 @@ namespace WebEntidadesMVC.Controllers
             var gameFilter = await getServices.GetGamesAsync(Pagina, token!);
 
             if (gameFilter.Count() == 0)
-                return NotFound(); // REDIRECCIONAR A VISTA ERROR O LOGIN**
+                return RedirectToAction("Index", "Home");
 
             int totalPag = gameFilter.FirstOrDefault()?.TotalPaginas ?? 0;
             var modeloPaginacion = new PaginacionViewModel<VideojuegosViewModel>
@@ -33,6 +33,32 @@ namespace WebEntidadesMVC.Controllers
             ViewBag.AccessToken = token;
 
             return View(modeloPaginacion);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateGameViewModel createGameViewModel)
+        {
+            GetServices getServices = new();
+
+            if (HttpContext.Session.GetString("AccessToken") == null)
+                return RedirectToAction("Index", "Home");
+
+            // Recuperar el string almacenado en la sesión
+            var token = HttpContext.Session.GetString("AccessToken");
+
+            var response = await getServices.CreateGamesAsync(createGameViewModel.Nombre!, createGameViewModel.Compania!, createGameViewModel.Ano, createGameViewModel.Precio, createGameViewModel.Puntaje, token!);
+
+            if (!response)
+                return View(createGameViewModel);
+
+            TempData["SuccessMessage"] = "¡El registro fue satisfactorio!";
+
+            return RedirectToAction("GetPages");
         }
     }
 }
