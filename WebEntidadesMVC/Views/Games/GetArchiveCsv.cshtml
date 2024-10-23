@@ -1,16 +1,58 @@
 ﻿<div class="container mt-5">
     <h2>Generar y Descargar Ranking CSV</h2>
-    <button id="downloadCsv" class="btn btn-primary">Descargar CSV</button>
+    <button id="openModal" class="btn btn-primary">Abrir Modal</button>@* Descargar CSV *@
+    <button id="log" class="btn btn-primary">Test</button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleModalLabel">Generar archivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Aquí mostraremos los detalles del registro seleccionado -->
+                <form id="csvForm">
+                    <div class="mb-3">
+                        <label for="inputNumber" class="form-label">Top deseado:</label>
+                        <input type="number" class="form-control" id="inputNumber" placeholder="Ingresa un número" required>
+                    </div>
+                    <button type="button" id="downloadCsv" class="btn btn-primary">Descargar CSV</button>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             var token = '@ViewBag.AccessToken';
+
+            $("#openModal").click(function () {
+                $('#detalleModal').modal('show');
+            });
+
             $("#downloadCsv").click(function () {
+                var inputNumber = $("#inputNumber").val(); // Captura valor del input modal
+                console.log('valor input', inputNumber);
+
+                if (!inputNumber || inputNumber < 0) {
+                    alert("Por favor ingresa un número válido.");
+                    return;
+                }
+
                 $.ajax({
                     url: 'http://localhost:5275/api/Entidades/GetArchiveCsv',
-                    method: "GET",
+                    method: "POST",
+                    contentType: "application/json", // Enviamos datos como JSON
+                    data: JSON.stringify({ top: inputNumber }), // Enviamos el número como JSON
                     xhrFields: {
                         responseType: 'blob' // Esto es clave para manejar archivos binarios
                     },
@@ -19,6 +61,8 @@
                     },
                     success: function (data, status, xhr) {
                         // Obtener el nombre del archivo desde el encabezado 'Content-Disposition' (si está presente)
+                        console.log(data);
+                        console.log(status);
                         var disposition = xhr.getResponseHeader('Content-Disposition');
                         var filename = "";
 
@@ -43,11 +87,17 @@
 
                         // Limpiar el URL del objeto después de la descarga
                         window.URL.revokeObjectURL(url);
+                        $("#inputNumber").val('');
                     },
                     error: function () {
                         alert("Error al descargar el archivo CSV.");
                     }
                 });
+            });
+
+            $('#log').click(function () {
+                console.log('clic', 'boton prueba');
+
             });
         });
     </script>

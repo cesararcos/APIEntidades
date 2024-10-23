@@ -129,12 +129,12 @@ namespace APIEntidades.Controllers
             return Ok(responde);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
         [Route(nameof(GetArchiveCsv))]
-        public IActionResult GetArchiveCsv([FromQuery] int? top)
+        public IActionResult GetArchiveCsv(FilterGetArchiveDto filterGetArchiveDto)
         {
-            var responde = _videoJuegosAppService.GetArchiveCsv(top);
+            var responde = _videoJuegosAppService.GetArchiveCsv(filterGetArchiveDto.Top);
 
             if (!responde.Success)
                 return NotFound(responde.ErrorMessage);
