@@ -12,6 +12,9 @@
     </div>
 }
 <h1>VideoJuegos</h1>
+<div class="col-md-3 mt-3">
+    <a class="btn btn-success" style="width: 100%" asp-area="" asp-controller="Games" asp-action="Create">Crear nuevo</a>
+</div>
 
 <table class="table">
     <thead>
@@ -30,6 +33,7 @@
                 <td>
                     <button class="btn btn-primary btn-detalle" type="button">Ver detalles</button>
                     <button class="btn btn-primary btn-editar" type="button">Editar</button>
+                    <button class="btn btn-danger btn-eliminar" type="button">Eliminar</button>
                 </td>
             </tr>
         }
@@ -145,6 +149,31 @@
     </div>
 </div>
 
+<!-- Modal Eliminar -->
+<div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleModalLabel">Eliminar videojuego</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <p><strong>Esta seguro de eliminar:</strong><br /><span id="modalNombreEliminar"></span></p>
+                <br />
+                <div class="col-md-12">
+                    <button type="submit" style="width: 100%" class="btn btn-danger btn-delete">Eliminar</button>
+                </div>
+                
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function () {
@@ -224,6 +253,34 @@
                 });
 
                 console.log('objeto:', videoJuegosDto);
+            });
+        });
+
+        $('.btn-eliminar').on('click', function () {
+            var row = $(this).closest('tr');
+
+            var id = row.data('id').toString();
+            $('#modalNombreEliminar').text(row.data('nombre').toString());
+
+            $('#eliminarModal').modal('show');
+
+            $('.btn-delete').on('click', function () {
+
+                $.ajax({
+                    url: `http://localhost:5275/api/Entidades/${id}/DeleteVideoGame`, // URL hacia la API DELETE
+                    method: 'DELETE',
+                    contentType: 'application/json',
+                    headers: {
+                        'Authorization': 'Bearer ' + token // Incluimos el token en los headers
+                    },
+                    success: function (response) {
+                        $('#eliminarModal').modal('hide');
+                        window.location.href = '@Url.Action("GetPages")';
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error al eliminar el videojuego: " + xhr.responseText);
+                    }
+                });
             });
         });
     });
