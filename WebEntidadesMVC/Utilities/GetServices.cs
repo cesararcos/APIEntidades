@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using WebEntidadesMVC.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using WebEntidadesMVC.Models;
+using WebEntidadesMVC.Utilities.Contracts;
 
 namespace WebEntidadesMVC.Utilities
 {
-    public class GetServices
+    public class GetServices : IGetService
     {
         private readonly HttpClient _httpClient;
 
@@ -14,25 +12,7 @@ namespace WebEntidadesMVC.Utilities
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri("http://localhost:5275/api/Entidades/");
         }
-        public async Task<string> GetTokenAsync(string username, string password)
-        {
-            var loginInfo = new
-            {
-                Correo = username,
-                Clave = password
-            };
-
-            var response = await _httpClient.PostAsJsonAsync("Login", loginInfo);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-                return result!.Token!;
-            }
-
-            return string.Empty;
-        }
-
+        
         public async Task<IEnumerable<VideojuegosViewModel>> GetGamesAsync(int page, string token)
         {
             List<VideojuegosViewModel> videojuegosViewModels = new();

@@ -1,25 +1,16 @@
 ﻿using APIEntidades.Application.Contracts;
 using APIEntidades.Domain.Dto;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace APIEntidades.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EntidadesController : ControllerBase
+    public class EntidadesController(IUsuarioAppService usuarioAppService, IVideoJuegosAppService videoJuegosAppService) : ControllerBase
     {
-        private readonly IUsuarioAppService _usuarioAppService;
-        private readonly IVideoJuegosAppService _videoJuegosAppService;
-
-        public EntidadesController(IUsuarioAppService usuarioAppService, IVideoJuegosAppService videoJuegosAppService)
-        {
-            _usuarioAppService = usuarioAppService;
-            _videoJuegosAppService = videoJuegosAppService;
-        }
+        private readonly IUsuarioAppService _usuarioAppService = usuarioAppService;
+        private readonly IVideoJuegosAppService _videoJuegosAppService = videoJuegosAppService;
 
         [HttpPost]
         [Route(nameof(EntidadesController.Register))]

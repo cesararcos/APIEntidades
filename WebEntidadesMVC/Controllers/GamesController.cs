@@ -1,22 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebEntidadesMVC.Models;
 using WebEntidadesMVC.Utilities;
+using WebEntidadesMVC.Utilities.Contracts;
 
 namespace WebEntidadesMVC.Controllers
 {
-    public class GamesController() : Controller
+    public class GamesController(IGetService getService) : Controller
     {
+        private readonly IGetService _getService = getService;
+
         public async Task<IActionResult> GetPages(int Pagina = 1)
         {
-            GetServices getServices = new();
-
             if (HttpContext.Session.GetString("AccessToken") == null)
                 return RedirectToAction("Index", "Home");
 
             // Recuperar el string almacenado en la sesión
             var token = HttpContext.Session.GetString("AccessToken");
 
-            var gameFilter = await getServices.GetGamesAsync(Pagina, token!);
+            var gameFilter = await _getService.GetGamesAsync(Pagina, token!);
 
             if (gameFilter.Count() == 0)
                 return RedirectToAction("Index", "Home");
@@ -46,15 +47,13 @@ namespace WebEntidadesMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateGameViewModel createGameViewModel)
         {
-            GetServices getServices = new();
-
             if (HttpContext.Session.GetString("AccessToken") == null)
                 return RedirectToAction("Index", "Home");
 
             // Recuperar el string almacenado en la sesión
             var token = HttpContext.Session.GetString("AccessToken");
 
-            var response = await getServices.CreateGamesAsync(createGameViewModel.Nombre!, createGameViewModel.Compania!, createGameViewModel.Ano, createGameViewModel.Precio, token!);
+            var response = await _getService.CreateGamesAsync(createGameViewModel.Nombre!, createGameViewModel.Compania!, createGameViewModel.Ano, createGameViewModel.Precio, token!);
 
             if (!response)
                 return View(createGameViewModel);

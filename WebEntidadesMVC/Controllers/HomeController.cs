@@ -1,18 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Numerics;
 using WebEntidadesMVC.Models;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using WebEntidadesMVC.Utilities;
-using Microsoft.AspNetCore.Http;
+using WebEntidadesMVC.Utilities.Contracts;
 
 namespace WebEntidadesMVC.Controllers
 {
-    public class HomeController(HttpClient httpClient) : Controller
+    public class HomeController(HttpClient httpClient, IGetHomeService getHomeService) : Controller
     {
         private readonly HttpClient _httpClient = httpClient;
+        private readonly IGetHomeService _getHomeService = getHomeService;
 
         public IActionResult Index()
         {
@@ -24,8 +20,7 @@ namespace WebEntidadesMVC.Controllers
         {
             try
             {
-                GetServices getServices = new();
-                var token = await getServices.GetTokenAsync(ingresoViewModel!.Correo!, ingresoViewModel!.Clave!);
+                var token = await _getHomeService.GetTokenAsync(ingresoViewModel!.Correo!, ingresoViewModel!.Clave!);
 
                 if (string.IsNullOrEmpty(token))
                     return Unauthorized();
@@ -52,22 +47,14 @@ namespace WebEntidadesMVC.Controllers
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("http://localhost:5275/api/Entidades/Register", registerViewModel);
+                var response = await _getHomeService.RegisterUserAsync(registerViewModel.Correo ?? string.Empty, registerViewModel.Clave ?? string.Empty, registerViewModel.Usuario ?? string.Empty);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var gestores = await response.Content.ReadFromJsonAsync<ResponseDto<bool>>();
+                if (!response)
+                    return View(registerViewModel);
 
-                    if (gestores!.Success && gestores!.Data)
-                        return RedirectToAction("Index");
+                TempData["SuccessMessage"] = "¡El registro fue satisfactorio!";
 
-                    return View("Privacy");
-                    //return RedirectToAction();
-                }
-                else
-                {
-                    return View("Error", $"Error en la respuesta del servidor: {response.StatusCode}");
-                }
+                return RedirectToAction("Register");
             }
             catch (HttpRequestException ex)
             {

@@ -1,3 +1,6 @@
+using WebEntidadesMVC.Utilities;
+using WebEntidadesMVC.Utilities.Contracts;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +15,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // Asegura que la cookie de sesión solo sea accesible desde el servidor
     options.Cookie.IsEssential = true; // Necesario para el consentimiento de cookies bajo GDPR
 });
+
+// Inyección Dependencia
+builder.Services.AddTransient<IGetHomeService, GetHomeService>();
+builder.Services.AddTransient<IGetService, GetServices>();
 
 var app = builder.Build();
 
