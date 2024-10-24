@@ -24,11 +24,12 @@
     <tbody>
         @foreach (var usuario in Model.Elementos)
         {
-            <tr data-id="@usuario.Id" class="table-row">
+            <tr data-id="@usuario.Id" data-nombre="@usuario.Nombre" data-compania="@usuario.Compania" data-ano="@usuario.Ano" data-precio="@usuario.Precio" class="table-row">
                 <td>@usuario.Nombre</td>
                 <td>@usuario.Compania</td>
                 <td>
                     <button class="btn btn-primary btn-detalle" type="button">Ver detalles</button>
+                    <button class="btn btn-primary btn-editar" type="button">Editar</button>
                 </td>
             </tr>
         }
@@ -83,7 +84,7 @@
 </nav>
 
 
-<!-- Modal -->
+<!-- Modal Detalle -->
 <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -105,12 +106,51 @@
     </div>
 </div>
 
+<!-- Modal Editar -->
+<div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleModalLabel">Editar videojuego</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <form id="editVideoGameForm">
+                    <div>
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" id="inputNombre" name="nombre" />
+                    </div>
+                    <div>
+                        <label for="compania">Compañia</label>
+                        <input type="text" class="form-control" id="inputCompania" name="compania" />
+                    </div>
+                    <div>
+                        <label for="ano">Año</label>
+                        <input type="number" class="form-control" id="inputAno" name="ano" />
+                    </div>
+                    <div>
+                        <label for="precio">Precio (Dolares)</label>
+                        <input type="text" class="form-control" id="inputPrecio" name="precio" />
+                    </div>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function () {
         var token = '@ViewBag.AccessToken';
 
-        // Evento de clic en los botones "Ver detalles"
+        // Evento de clic en los boton "Ver detalles"
         $('.btn-detalle').on('click', function () {
             // Obtenemos la fila asociada al botón que fue clicado
             var row = $(this).closest('tr');
@@ -138,6 +178,52 @@
                 error: function (error) {
                     console.error('Ocurrió un error:', error);
                 }
+            });
+        });
+
+        // Evento de clic en los boton "Editar"
+        $('.btn-editar').on('click', function () {
+            var row = $(this).closest('tr');
+
+            var id = row.data('id').toString();
+
+            //console.log('puntaje:', puntaje);
+            $("#inputNombre").val(row.data('nombre').toString());
+            $("#inputCompania").val(row.data('compania').toString());
+            $("#inputAno").val(row.data('ano').toString());
+            $("#inputPrecio").val(row.data('precio'));
+
+            $('#editarModal').modal('show');
+
+            // Evento tipo submit boton modal "Guardar cambios"
+            $('#editVideoGameForm').submit(function (event) {
+                event.preventDefault();
+
+                var videoJuegosDto = {
+                    nombre: $("#inputNombre").val(),
+                    compania: $('#inputCompania').val(),
+                    ano: $('#inputAno').val(),
+                    precio: parseFloat($('#inputPrecio').val().replace(',', '.')) || null
+                };
+
+                $.ajax({
+                    url: `http://localhost:5275/api/Entidades/${id}/EditVideoGame`, // URL hacia la API PUT
+                    method: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(videoJuegosDto),
+                    headers: {
+                        'Authorization': 'Bearer ' + token // Incluimos el token en los headers
+                    },
+                    success: function (response) {
+                        $('#editarModal').modal('hide');
+                        window.location.href = '@Url.Action("GetPages")';
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error al actualizar el videojuego: " + xhr.responseText);
+                    }
+                });
+
+                console.log('objeto:', videoJuegosDto);
             });
         });
     });

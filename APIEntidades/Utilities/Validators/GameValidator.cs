@@ -19,9 +19,6 @@ namespace APIEntidades.Utilities.Validators
             RuleFor(usuario => usuario.Precio)
                 .NotEmpty().WithMessage("El precio es requerido.");
 
-            RuleFor(usuario => usuario.Puntaje)
-                .NotEmpty().WithMessage("El puntaje es requerido.");
-
 
             //RuleFor(usuario => usuario.Edad)
             //    .GreaterThan(18).WithMessage("Debe ser mayor de 18 años.")
