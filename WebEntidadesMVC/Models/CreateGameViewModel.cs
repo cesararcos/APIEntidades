@@ -15,7 +15,5 @@ namespace WebEntidadesMVC.Models
 
         [Required(ErrorMessage = "El precio es obligatorio.")]
         public decimal? Precio { get; set; }
-
-        public decimal? Puntaje { get; set; }
     }
 }

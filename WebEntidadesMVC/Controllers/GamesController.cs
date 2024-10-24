@@ -51,7 +51,7 @@ namespace WebEntidadesMVC.Controllers
             // Recuperar el string almacenado en la sesión
             var token = HttpContext.Session.GetString("AccessToken");
 
-            var response = await getServices.CreateGamesAsync(createGameViewModel.Nombre!, createGameViewModel.Compania!, createGameViewModel.Ano, createGameViewModel.Precio, createGameViewModel.Puntaje, token!);
+            var response = await getServices.CreateGamesAsync(createGameViewModel.Nombre!, createGameViewModel.Compania!, createGameViewModel.Ano, createGameViewModel.Precio, token!);
 
             if (!response)
                 return View(createGameViewModel);

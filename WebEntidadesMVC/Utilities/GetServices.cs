@@ -75,15 +75,14 @@ namespace WebEntidadesMVC.Utilities
             return videojuegosViewModels;
         }
 
-        public async Task<bool> CreateGamesAsync(string nombre, string compania, int? ano, decimal? precio, decimal? puntaje, string token)
+        public async Task<bool> CreateGamesAsync(string nombre, string compania, int? ano, decimal? precio, string token)
         {
             var gameInfo = new
             {
                 Nombre = nombre,
                 Compania = compania,
                 Ano = ano,
-                Precio = precio,
-                Puntaje = puntaje
+                Precio = precio
             };
 
             // Autenticación y llamada a la API

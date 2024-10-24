@@ -18,34 +18,6 @@ namespace WebEntidadesMVC.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Login()
-        {
-            // Obtener el token de autenticación del contexto actual
-            var accessToken = await HttpContext.GetTokenAsync("access_token");
-
-            // Verificamos si el token está disponible
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                return View("Error", "No se encontró un token de acceso válido.");
-            }
-
-            // Agregar el token al encabezado Authorization
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-            var response = await _httpClient.GetAsync("http://localhost:5275/api/Entidades/GetGames");
-            if (response.IsSuccessStatusCode)
-            {
-                var gestores = await response.Content.ReadFromJsonAsync<ResponseDto<IEnumerable<VideojuegosViewModel>>>();
-                List<VideojuegosViewModel> list = gestores!.Data.Select(x => new VideojuegosViewModel()
-                {
-                    Compania = x.Compania
-                }).ToList();
-                return View(list);
-            }
-
-            return View("Error");
-        }
-
         [HttpPost]
         public async Task<IActionResult> Login(IngresoViewModel ingresoViewModel)
         {
@@ -61,23 +33,6 @@ namespace WebEntidadesMVC.Controllers
                 HttpContext.Session.SetString("AccessToken", token);
 
                 return RedirectToAction("GetPages", "Games");
-
-                var response = await _httpClient.GetAsync("http://localhost:5275/api/Entidades/GetGames");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var gestores = await response.Content.ReadFromJsonAsync<ResponseDto<IEnumerable<VideojuegosViewModel>>>();
-                    List<VideojuegosViewModel> list = gestores!.Data.Select(x => new VideojuegosViewModel()
-                    {
-                        Compania = x.Compania
-                    }).ToList();
-                    //return View("Privacy");
-                    return RedirectToAction("GetPages", "Games");
-                }
-                else
-                {
-                    return View("Error", $"Error en la respuesta del servidor: {response.StatusCode}");
-                }
             }
             catch (HttpRequestException ex)
             {
