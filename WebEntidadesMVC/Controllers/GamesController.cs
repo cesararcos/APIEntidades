@@ -9,6 +9,7 @@ namespace WebEntidadesMVC.Controllers
     {
         private readonly IGetService _getService = getService;
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> GetPages(int Pagina = 1)
         {
             if (HttpContext.Session.GetString("AccessToken") == null)
@@ -36,6 +37,7 @@ namespace WebEntidadesMVC.Controllers
             return View(modeloPaginacion);
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Create()
         {
             if (HttpContext.Session.GetString("AccessToken") == null)
@@ -45,6 +47,7 @@ namespace WebEntidadesMVC.Controllers
         }
 
         [HttpPost]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Create(CreateGameViewModel createGameViewModel)
         {
             if (HttpContext.Session.GetString("AccessToken") == null)
@@ -63,6 +66,7 @@ namespace WebEntidadesMVC.Controllers
             return RedirectToAction("GetPages");
         }
 
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult GetArchiveCsv()
         {
             if (HttpContext.Session.GetString("AccessToken") == null)

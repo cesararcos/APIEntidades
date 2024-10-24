@@ -5,9 +5,8 @@ using WebEntidadesMVC.Utilities.Contracts;
 
 namespace WebEntidadesMVC.Controllers
 {
-    public class HomeController(HttpClient httpClient, IGetHomeService getHomeService) : Controller
+    public class HomeController(IGetHomeService getHomeService) : Controller
     {
-        private readonly HttpClient _httpClient = httpClient;
         private readonly IGetHomeService _getHomeService = getHomeService;
 
         public IActionResult Index()
@@ -23,7 +22,7 @@ namespace WebEntidadesMVC.Controllers
                 var token = await _getHomeService.GetTokenAsync(ingresoViewModel!.Correo!, ingresoViewModel!.Clave!);
 
                 if (string.IsNullOrEmpty(token))
-                    return Unauthorized();
+                    return RedirectToAction("Error", new { mensaje = "Usuario no existe." });
 
                 // Creación Variable session
                 HttpContext.Session.SetString("AccessToken", token);
@@ -78,9 +77,9 @@ namespace WebEntidadesMVC.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error(string mensaje)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { RequestId = mensaje });
         }
     }
 }
