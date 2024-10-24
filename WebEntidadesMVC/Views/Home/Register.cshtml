@@ -5,7 +5,7 @@
 
 @if (!string.IsNullOrEmpty(successMessage))
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">
         @successMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -38,6 +38,30 @@
     
 </form>
 
+<style>
+    /* Opcionalmente, puedes agregar una transición suave */
+    .fade-out {
+        transition: opacity 1s ease-out;
+        opacity: 0;
+    }
+</style>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const alertElement = document.getElementById('myAlert');
+            if (alertElement) {
+                setTimeout(function () {
+                    // Añadir clase fade-out para animar la desaparición
+                    document.getElementById('myAlert').classList.add('fade-out');
+
+                    setTimeout(function () {
+                        document.getElementById('myAlert').style.display = 'none';
+                    }, 1000); // Ajusta esto para que coincida con la duración de la animación
+                }, 3000); // El div se ocultará
+            }
+        });
+    </script>
 }

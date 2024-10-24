@@ -6,7 +6,7 @@
 
 @if (!string.IsNullOrEmpty(successMessage))
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div id="myAlert" class="alert alert-success alert-dismissible fade show" role="alert">
         @successMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -174,114 +174,138 @@
     </div>
 </div>
 
+<style>
+    /* Opcionalmente, puedes agregar una transición suave */
+    .fade-out {
+        transition: opacity 1s ease-out;
+        opacity: 0;
+    }
+</style>
 
-<script>
-    $(document).ready(function () {
-        var token = '@ViewBag.AccessToken';
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var token = '@ViewBag.AccessToken';
 
-        // Evento de clic en los boton "Ver detalles"
-        $('.btn-detalle').on('click', function () {
-            // Obtenemos la fila asociada al botón que fue clicado
-            var row = $(this).closest('tr');
+            // Evento de clic en los boton "Ver detalles"
+            $('.btn-detalle').on('click', function () {
+                // Obtenemos la fila asociada al botón que fue clicado
+                var row = $(this).closest('tr');
 
-            // Extraemos los datos de la fila (el ID del gestor)
-            var id = row.data('id').toString();
-            // Hacemos la llamada a la API usando POST y enviamos el ID en el cuerpo
-            $.ajax({
-                url: 'http://localhost:5275/api/Entidades/GetGamesById',  // La URL del endpoint POST
-                method: 'POST',
-                contentType: 'application/json', // Especificamos que enviamos JSON
-                data: JSON.stringify({ id: id }), // Convertimos el ID a JSON y lo enviamos en el cuerpo
-                headers: {
-                    'Authorization': 'Bearer ' + token // Incluimos el token en los headers
-                },
-                success: function (data) {
-                    $('#modalNombre').text(data.nombre);
-                    $('#modalCompania').text(data.compania);
-                    $('#modalAno').text(data.ano);
-                    $('#modalPrecio').text(data.precio);
-
-                    // Mostramos la modal
-                    $('#detalleModal').modal('show');
-                },
-                error: function (error) {
-                    console.error('Ocurrió un error:', error);
-                }
-            });
-        });
-
-        // Evento de clic en los boton "Editar"
-        $('.btn-editar').on('click', function () {
-            var row = $(this).closest('tr');
-
-            var id = row.data('id').toString();
-
-            //console.log('puntaje:', puntaje);
-            $("#inputNombre").val(row.data('nombre').toString());
-            $("#inputCompania").val(row.data('compania').toString());
-            $("#inputAno").val(row.data('ano').toString());
-            $("#inputPrecio").val(row.data('precio'));
-
-            $('#editarModal').modal('show');
-
-            // Evento tipo submit boton modal "Guardar cambios"
-            $('#editVideoGameForm').submit(function (event) {
-                event.preventDefault();
-
-                var videoJuegosDto = {
-                    nombre: $("#inputNombre").val(),
-                    compania: $('#inputCompania').val(),
-                    ano: $('#inputAno').val(),
-                    precio: parseFloat($('#inputPrecio').val().replace(',', '.')) || null
-                };
-
+                // Extraemos los datos de la fila (el ID del gestor)
+                var id = row.data('id').toString();
+                // Hacemos la llamada a la API usando POST y enviamos el ID en el cuerpo
                 $.ajax({
-                    url: `http://localhost:5275/api/Entidades/${id}/EditVideoGame`, // URL hacia la API PUT
-                    method: 'PUT',
-                    contentType: 'application/json',
-                    data: JSON.stringify(videoJuegosDto),
+                    url: 'http://localhost:5275/api/Entidades/GetGamesById',  // La URL del endpoint POST
+                    method: 'POST',
+                    contentType: 'application/json', // Especificamos que enviamos JSON
+                    data: JSON.stringify({ id: id }), // Convertimos el ID a JSON y lo enviamos en el cuerpo
                     headers: {
                         'Authorization': 'Bearer ' + token // Incluimos el token en los headers
                     },
-                    success: function (response) {
-                        $('#editarModal').modal('hide');
-                        window.location.href = '@Url.Action("GetPages")';
+                    success: function (data) {
+                        $('#modalNombre').text(data.nombre);
+                        $('#modalCompania').text(data.compania);
+                        $('#modalAno').text(data.ano);
+                        $('#modalPrecio').text(data.precio);
+
+                        // Mostramos la modal
+                        $('#detalleModal').modal('show');
                     },
-                    error: function (xhr, status, error) {
-                        alert("Error al actualizar el videojuego: " + xhr.responseText);
-                    }
-                });
-
-                console.log('objeto:', videoJuegosDto);
-            });
-        });
-
-        $('.btn-eliminar').on('click', function () {
-            var row = $(this).closest('tr');
-
-            var id = row.data('id').toString();
-            $('#modalNombreEliminar').text(row.data('nombre').toString());
-
-            $('#eliminarModal').modal('show');
-
-            $('.btn-delete').on('click', function () {
-
-                $.ajax({
-                    url: `http://localhost:5275/api/Entidades/${id}/DeleteVideoGame`, // URL hacia la API DELETE
-                    method: 'DELETE',
-                    contentType: 'application/json',
-                    headers: {
-                        'Authorization': 'Bearer ' + token // Incluimos el token en los headers
-                    },
-                    success: function (response) {
-                        $('#eliminarModal').modal('hide');
-                        window.location.href = '@Url.Action("GetPages")';
-                    },
-                    error: function (xhr, status, error) {
-                        alert("Error al eliminar el videojuego: " + xhr.responseText);
+                    error: function (error) {
+                        console.error('Ocurrió un error:', error);
                     }
                 });
             });
+
+            // Evento de clic en los boton "Editar"
+            $('.btn-editar').on('click', function () {
+                var row = $(this).closest('tr');
+
+                var id = row.data('id').toString();
+
+                //console.log('puntaje:', puntaje);
+                $("#inputNombre").val(row.data('nombre').toString());
+                $("#inputCompania").val(row.data('compania').toString());
+                $("#inputAno").val(row.data('ano').toString());
+                $("#inputPrecio").val(row.data('precio'));
+
+                $('#editarModal').modal('show');
+
+                // Evento tipo submit boton modal "Guardar cambios"
+                $('#editVideoGameForm').submit(function (event) {
+                    event.preventDefault();
+
+                    var videoJuegosDto = {
+                        nombre: $("#inputNombre").val(),
+                        compania: $('#inputCompania').val(),
+                        ano: $('#inputAno').val(),
+                        precio: parseFloat($('#inputPrecio').val().replace(',', '.')) || null
+                    };
+
+                    $.ajax({
+                        url: `http://localhost:5275/api/Entidades/${id}/EditVideoGame`, // URL hacia la API PUT
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(videoJuegosDto),
+                        headers: {
+                            'Authorization': 'Bearer ' + token // Incluimos el token en los headers
+                        },
+                        success: function (response) {
+                            $('#editarModal').modal('hide');
+                            window.location.href = '@Url.Action("GetPages")';
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error al actualizar el videojuego: " + xhr.responseText);
+                        }
+                    });
+
+                    console.log('objeto:', videoJuegosDto);
+                });
+            });
+
+            $('.btn-eliminar').on('click', function () {
+                var row = $(this).closest('tr');
+
+                var id = row.data('id').toString();
+                $('#modalNombreEliminar').text(row.data('nombre').toString());
+
+                $('#eliminarModal').modal('show');
+
+                $('.btn-delete').on('click', function () {
+
+                    $.ajax({
+                        url: `http://localhost:5275/api/Entidades/${id}/DeleteVideoGame`, // URL hacia la API DELETE
+                        method: 'DELETE',
+                        contentType: 'application/json',
+                        headers: {
+                            'Authorization': 'Bearer ' + token // Incluimos el token en los headers
+                        },
+                        success: function (response) {
+                            $('#eliminarModal').modal('hide');
+                            window.location.href = '@Url.Action("GetPages")';
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error al eliminar el videojuego: " + xhr.responseText);
+                        }
+                    });
+                });
+            });
         });
-    });
-</script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const alertElement = document.getElementById('myAlert');
+            if (alertElement) {
+                setTimeout(function () {
+                    // Añadir clase fade-out para animar la desaparición
+                    document.getElementById('myAlert').classList.add('fade-out');
+
+                    setTimeout(function () {
+                        document.getElementById('myAlert').style.display = 'none';
+                    }, 1000); // Ajusta esto para que coincida con la duración de la animación
+                }, 3000); // El div se ocultará
+            }
+        });
+    </script>
+}
+
