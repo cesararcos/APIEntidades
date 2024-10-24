@@ -37,6 +37,9 @@ namespace WebEntidadesMVC.Controllers
 
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetString("AccessToken") == null)
+                return RedirectToAction("Index", "Home");
+
             return View();
         }
 

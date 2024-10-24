@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using WebEntidadesMVC.Utilities;
+using Microsoft.AspNetCore.Http;
 
 namespace WebEntidadesMVC.Controllers
 {
@@ -31,6 +32,7 @@ namespace WebEntidadesMVC.Controllers
 
                 // Creación Variable session
                 HttpContext.Session.SetString("AccessToken", token);
+                HttpContext.Session.SetString("EmailAccess", ingresoViewModel.Correo!);
 
                 return RedirectToAction("GetPages", "Games");
             }
@@ -73,6 +75,14 @@ namespace WebEntidadesMVC.Controllers
             }
         }
 
+        public IActionResult Logout()
+        {
+            // Eliminar sesiones
+            HttpContext.Session.Remove("AccessToken");
+            HttpContext.Session.Remove("EmailAccess");
+
+            return RedirectToAction("Index");
+        }
 
         public IActionResult Privacy()
         {
