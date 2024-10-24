@@ -138,12 +138,31 @@
                         <input type="text" class="form-control" id="inputPrecio" name="precio" />
                     </div>
                     <br />
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <button type="submit" style="width: 100%" class="btn btn-primary" onclick="confirmarEdicion();">Guardar cambios</button>
                 </form>
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas actualizar el registro?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmButton">Confirmar</button>
             </div>
         </div>
     </div>
@@ -293,6 +312,7 @@
             });
         });
 
+        // Lógica para quitar aviso alerta
         document.addEventListener('DOMContentLoaded', function () {
             const alertElement = document.getElementById('myAlert');
             if (alertElement) {
@@ -305,6 +325,20 @@
                     }, 1000); // Ajusta esto para que coincida con la duración de la animación
                 }, 3000); // El div se ocultará
             }
+        });
+
+        // Función para mostrar modal confirmar edición
+        function confirmarEdicion() {
+            event.preventDefault();
+            var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            modal.show();
+        }
+
+        // Cuando el usuario hace clic en "Confirmar" en el modal, invoca evento submit para edición
+        // NOTA: Se desea quitar modal de confirmación, en boton Guardar cambios quitar onclic y dejar solo submit
+        document.getElementById('confirmButton').addEventListener('click', function () {
+            event.preventDefault();
+            $('#editVideoGameForm').submit();
         });
     </script>
 }
