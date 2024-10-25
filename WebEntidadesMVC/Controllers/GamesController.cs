@@ -9,8 +9,9 @@ namespace WebEntidadesMVC.Controllers
     {
         private readonly IGetService _getService = getService;
 
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<IActionResult> GetPages(int Pagina = 1)
+        public async Task<IActionResult> GetPages(int pagina = 1, string? nombre = null, string? compania = null, int? ano = null)
         {
             if (HttpContext.Session.GetString("AccessToken") == null)
                 return RedirectToAction("Index", "Home");
@@ -18,21 +19,22 @@ namespace WebEntidadesMVC.Controllers
             // Recuperar el string almacenado en la sesión
             var token = HttpContext.Session.GetString("AccessToken");
 
-            var gameFilter = await _getService.GetGamesAsync(Pagina, token!);
-
-            if (gameFilter.Count() == 0)
-                return RedirectToAction("Index", "Home");
+            var gameFilter = await _getService.GetGamesAsync(pagina, nombre, compania, ano, token!);
 
             int totalPag = gameFilter.FirstOrDefault()?.TotalPaginas ?? 0;
             var modeloPaginacion = new PaginacionViewModel<VideojuegosViewModel>
             {
                 Elementos = gameFilter.ToList(),
-                PaginaActual = Pagina,
+                PaginaActual = pagina,
                 TotalPaginas = totalPag,
                 TamanoPagina = 5
             };
 
             ViewBag.AccessToken = token;
+
+            ViewData["Nombre"] = nombre;
+            ViewData["Compania"] = compania;
+            ViewData["Ano"] = ano;
 
             return View(modeloPaginacion);
         }

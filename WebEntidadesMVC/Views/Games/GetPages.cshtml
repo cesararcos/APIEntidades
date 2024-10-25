@@ -16,6 +16,41 @@
     <a class="btn btn-success" style="width: 100%" asp-area="" asp-controller="Games" asp-action="Create">Crear nuevo</a>
 </div>
 
+<form id="filterForm" asp-action="GetPages" method="get">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="inputFilterNombre" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" id="inputFilterNombre" name="nombre" value="@ViewData["Nombre"]" placeholder="Ingresa un nombre"> @* name="nombre" envia data a parametro en metodo *@
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="inputFilterCompania" class="form-label">Compañia:</label>
+                <input type="text" class="form-control" id="inputFilterCompania" name="compania" value="@ViewData["Compania"]" placeholder="Ingresa una compañia">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="inputFilterAno" class="form-label">Año:</label>
+                <input type="number" class="form-control" id="inputFilterAno" name="ano" value="@ViewData["Ano"]" placeholder="Ingresa un año">
+            </div>
+        </div>
+        <div class="col-md-3 mt-3">
+            <button type="submit" style="width: 100%; margin: 5% 0" id="btnFilter" class="btn btn-info">Buscar</button>
+
+        </div>
+    </div>
+</form>
+
+<div class="row" style="direction: rtl;">
+    <div class="col-md-3">
+        <button style="width: 100%" id="btnLimpiar" class="btn btn-info btn-clear">Limpiar</button>
+    </div>
+</div>
+
+
+
 <table class="table">
     <thead>
         <tr>
@@ -46,7 +81,9 @@
         @if (Model.TienePaginaAnterior)
         {
             <li class="page-item">
-                <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual - 1)">Anterior</a>
+                @* <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual - 1)">Anterior</a> *@
+                <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual - 1)"
+                   asp-route-nombre="@ViewData["Nombre"]" asp-route-compania="@ViewData["Compania"]" asp-route-ano="@ViewData["Ano"]">Anterior</a>
             </li>
         }
         else
@@ -67,7 +104,9 @@
             else
             {
                 <li class="page-item">
-                    <a class="page-link" asp-action="GetPages" asp-route-pagina="@i">@i</a>
+                    @* <a class="page-link" asp-action="GetPages" asp-route-pagina="@i">@i</a> *@
+                    <a class="page-link" asp-action="GetPages" asp-route-pagina="@i"
+                       asp-route-nombre="@ViewData["Nombre"]" asp-route-compania="@ViewData["Compania"]" asp-route-ano="@ViewData["Ano"]">@i</a>
                 </li>
             }
         }
@@ -75,7 +114,9 @@
         @if (Model.TienePaginaSiguiente)
         {
             <li class="page-item">
-                <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual + 1)">Siguiente</a>
+                @* <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual + 1)">Siguiente</a> *@
+                <a class="page-link" asp-action="GetPages" asp-route-pagina="@(Model.PaginaActual + 1)"
+                   asp-route-nombre="@ViewData["Nombre"]" asp-route-compania="@ViewData["Compania"]" asp-route-ano="@ViewData["Ano"]">Siguiente</a>
             </li>
         }
         else
@@ -119,7 +160,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                
+
                 <form id="editVideoGameForm">
                     <div>
                         <label for="nombre">Nombre</label>
@@ -183,7 +224,7 @@
                 <div class="col-md-12">
                     <button type="submit" style="width: 100%" class="btn btn-danger btn-delete">Eliminar</button>
                 </div>
-                
+
 
             </div>
             <div class="modal-footer">
@@ -205,6 +246,14 @@
     <script>
         $(document).ready(function () {
             var token = '@ViewBag.AccessToken';
+
+            // Evento de clic en los boton "Editar"
+            $('.btn-clear').on('click', function () {
+                console.log('evento limpiar campos');
+                $("#inputFilterNombre").val('');
+                $("#inputFilterCompania").val('');
+                $("#inputFilterAno").val('');
+            });
 
             // Evento de clic en los boton "Ver detalles"
             $('.btn-detalle').on('click', function () {

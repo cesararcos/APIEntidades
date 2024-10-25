@@ -13,16 +13,16 @@ namespace WebEntidadesMVC.Utilities
             _httpClient.BaseAddress = new Uri("http://localhost:5275/api/Entidades/");
         }
         
-        public async Task<IEnumerable<VideojuegosViewModel>> GetGamesAsync(int page, string token)
+        public async Task<IEnumerable<VideojuegosViewModel>> GetGamesAsync(int page, string? nombre, string? compania, int? ano, string token)
         {
             List<VideojuegosViewModel> videojuegosViewModels = new();
 
             var gameInfo = new
             {
                 Page = page,
-                Nombre = string.Empty,
-                Compania = string.Empty,
-                Ano = 0
+                Nombre = nombre ?? string.Empty,
+                Compania = compania ?? string.Empty,
+                Ano = ano ?? 0
             };
 
             // Autenticación y llamada a la API
